@@ -1,0 +1,2 @@
+// This file is responsible for generating the maze using different algorithms
+// Maze object represents the maze and contains the maze map, maze size, number of items, items position and the player position

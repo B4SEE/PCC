@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include <utility>
 
@@ -26,8 +27,8 @@ public:
     enum Difficulty { EASY, MEDIUM, HARD };
 
     /**
+     * @fn Maze::Maze(int width, int height, Difficulty difficulty)
      * @brief Constructs a Maze object with specified dimensions and difficulty.
-     * 
      * @param width The width of the maze.
      * @param height The height of the maze.
      * @param difficulty The difficulty level of the maze.
@@ -35,45 +36,45 @@ public:
     Maze(int width, int height, Difficulty difficulty);
 
     /**
+     * @fn void Maze::generateItems(int itemCount)
      * @brief Generates a specified number of items within the maze.
-     * 
      * @param itemCount The number of items to generate in the maze.
      */
     void generateItems(int itemCount);
 
     /**
+     * @fn void Maze::setPlayerPosition(int x, int y)
      * @brief Sets the player's position within the maze.
-     * 
      * @param x The x-coordinate of the player's position.
      * @param y The y-coordinate of the player's position.
      */
     void setPlayerPosition(int x, int y);
 
     /**
+     * @fn std::pair<int, int> Maze::getPlayerPosition() const
      * @brief Retrieves the player's current position in the maze.
-     * 
      * @return A pair of integers representing the x and y coordinates of the player's position.
      */
     std::pair<int, int> getPlayerPosition() const;
 
     /**
+     * @fn const std::vector<std::vector<char>>& Maze::getMaze() const
      * @brief Retrieves the current state of the maze.
-     * 
      * @return A constant reference to a 2D vector representing the maze map.
      */
     const std::vector<std::vector<char>>& getMaze() const;
 
 private:
     /**
+     * @fn void Maze::createMaze(Difficulty difficulty)
      * @brief Creates the maze based on the specified difficulty level.
-     * 
      * @param difficulty The difficulty level to use for maze creation.
      */
     void createMaze(Difficulty difficulty);
 
     /**
+     * @fn void Maze::placeItems(int itemCount)
      * @brief Places a specified number of items within the maze.
-     * 
      * @param itemCount The number of items to place in the maze.
      */
     void placeItems(int itemCount);

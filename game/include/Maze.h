@@ -35,19 +35,21 @@ public:
      */
     Maze(int width, int height, Difficulty difficulty);
 
-    /**
-     * @fn void Maze::generateItems(int itemCount)
-     * @brief Generates a specified number of items within the maze.
-     * @param itemCount The number of items to generate in the maze.
-     */
-    void generateItems(int itemCount);
+    void displayMaze(const std::vector<std::vector<int>>& grid, bool raw = false);
 
     /**
-     * @fn void Maze::setPlayerPosition(int x, int y)
-     * @brief Sets the player's position within the maze.
-     * @param x The x-coordinate of the player's position.
-     * @param y The y-coordinate of the player's position.
+     * @fn const std::vector<std::vector<char>>& Maze::getMaze() const
+     * @brief Retrieves the current state of the maze.
+     * @return A constant reference to a 2D vector representing the maze map.
      */
+    const std::vector<std::vector<int>>& getMaze() const;
+
+    /**
+    * @fn void Maze::setPlayerPosition(int x, int y)
+    * @brief Sets the player's position within the maze.
+    * @param x The x-coordinate of the player's position.
+    * @param y The y-coordinate of the player's position.
+    */
     void setPlayerPosition(int x, int y);
 
     /**
@@ -57,20 +59,24 @@ public:
      */
     std::pair<int, int> getPlayerPosition() const;
 
-    /**
-     * @fn const std::vector<std::vector<char>>& Maze::getMaze() const
-     * @brief Retrieves the current state of the maze.
-     * @return A constant reference to a 2D vector representing the maze map.
-     */
-    const std::vector<std::vector<char>>& getMaze() const;
-
 private:
+    /**
+     * @fn void Maze::generateItems(int itemCount)
+     * @brief Generates a specified number of items within the maze.
+     * @param itemCount The number of items to generate in the maze.
+     */
+    void generateItems(int itemCount);
+
     /**
      * @fn void Maze::createMaze(Difficulty difficulty)
      * @brief Creates the maze based on the specified difficulty level.
      * @param difficulty The difficulty level to use for maze creation.
      */
     void createMaze(Difficulty difficulty);
+
+    void createEasyMaze();
+    void createMediumMaze();
+    void createHardMaze();
 
     /**
      * @fn void Maze::placeItems(int itemCount)
@@ -81,7 +87,8 @@ private:
 
     int width;
     int height;
-    std::vector<std::vector<char>> mazeMap;
+    std::vector<std::vector<int>> mazeMap;
+    std::vector<std::vector<int>> displayGrid;
     std::vector<std::pair<int, int>> itemsPosition;
-    std::pair<int, int> playerPosition;
+    std::pair<int, int> playerPosition = std::make_pair(1, 1);
 };

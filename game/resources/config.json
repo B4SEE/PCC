@@ -1,0 +1,22 @@
+{
+    "_comment0": "Game configuration",
+    "PLAYER_MOVEMENT_SPEED": 5.0,
+    "MAZE_WIDTH": 20,
+    "MAZE_HEIGHT": 2,
+    "SCREEN_WIDTH": 800,
+    "SCREEN_HEIGHT": 600,
+    "EXPLORE_RADIUS": 3,
+    "COMPLETED_MAZES_TO_WIN": 5,
+    "MAX_ITEMS_IN_MAZE_SECTION": 10,
+    "MIN_ITEMS_IN_MAZE_SECTION": 1,
+    "_comment1": "Key bindings",
+    "_note0": "Default key bindings are WASD for movement, Q and E for turning, and M for opening the map",
+    "_note1": "Key bindings can be set to alphanumeric characters (0-9a-zA-Z, excluding special characters) only",
+    "MOVE_FORWARD": "W",
+    "MOVE_BACKWARD": "S",
+    "MOVE_LEFT": "A",
+    "MOVE_RIGHT": "D",
+    "TURN_LEFT": "Q",
+    "TURN_RIGHT": "E",
+    "OPEN_MAP": "M"
+}

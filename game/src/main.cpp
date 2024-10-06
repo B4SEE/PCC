@@ -1,6 +1,7 @@
-#include <iostream>
 #include "Config.h"
+#include "logging/Log_func.h"
 
 int main() {
-    // Nothing interesting here yet
+    initLogging();
+    Config::init("../resources/config.json");
 }

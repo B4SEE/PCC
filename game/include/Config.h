@@ -69,6 +69,15 @@ public:
      */
     static int MIN_ITEMS_IN_MAZE_SECTION;
 
+    // Keybindings
+    static std::string MOVE_FORWARD;
+    static std::string MOVE_BACKWARD;
+    static std::string MOVE_LEFT;
+    static std::string MOVE_RIGHT;
+    static std::string TURN_LEFT;
+    static std::string TURN_RIGHT;
+    static std::string OPEN_MAP;
+
     /**
      * @fn void Config::init(const std::string& configFile)
      * @brief Initializes the configuration settings from the specified file.
@@ -119,7 +128,13 @@ private:
 
     /**
      * @fn void Config::resetConst()
-     * @brief Resets all configuration constants to their default values.
+     * @brief Resets all game constants to their default values.
      */
     static void resetConst();
+
+    /**
+     * @fn void Config::resetKeybindings()
+     * @brief Resets all keybindings to their default values.
+     */
+    static void resetKeybindings();
 };

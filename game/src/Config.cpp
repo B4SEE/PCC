@@ -1,11 +1,9 @@
 #include "Config.h"
 #include <fstream>
 #include <sstream>
-#include <iostream>
-#include <stdexcept>
 #include <nlohmann/json.h>
 #include "Check.h"
-#include "logging/Log_func.h"
+#include "Log.h"
 
 using json = nlohmann::json;
 
@@ -51,7 +49,7 @@ void Config::resetConst() {
 }
 
 void Config::init(const std::string& configFile) {
-    LOG(INFO) << "Loading configuration file: " << configFile;
+    LOG_INFO("Loading configuration file: {}", configFile);
     const Config config(configFile);
     try
     {
@@ -73,28 +71,27 @@ void Config::init(const std::string& configFile) {
         TURN_RIGHT = config.getString("TURN_RIGHT");
         OPEN_MAP = config.getString("OPEN_MAP");
 
-        if (MAZE_WIDTH > SCREEN_WIDTH || MAZE_HEIGHT > SCREEN_HEIGHT)
-        {
+        // Move to Check.cpp
+        if (MAZE_WIDTH > SCREEN_WIDTH || MAZE_HEIGHT > SCREEN_HEIGHT) {
             resetConst();
-            LOG(WARNING) << "Maze dimensions exceed screen dimensions, resetting to default values";
+            LOG_WARN("Maze dimensions exceed screen dimensions, default values loaded");
         }
 
-        LOG(DEBUG) << "Game constants loaded\n";
+        LOG_INFO("Configuration file loaded");
 
         if (!Check::checkKeybindings())
         {
             resetKeybindings();
-            LOG(WARNING) << "Invalid keybindings, default values loaded";
+            LOG_WARN("Invalid keybindings, default values loaded");
         }
 
-        LOG(INFO) << "Configuration file loaded";
+        LOG_INFO("Keybindings loaded");
     }
     catch (const std::exception& e)
     {
         resetConst();
         resetKeybindings();
-        LOG(ERROR) << "Failed to load configuration file " << configFile << ": " << e.what();
-        LOG(INFO) << "Failed, default configuration loaded";
+        LOG_ERROR("Failed to load configuration file: {}", e.what());
     }
 }
 
@@ -106,7 +103,7 @@ Config::Config(const std::string& configFile) {
 void Config::loadConfigFile(const std::string& configFile) {
     std::ifstream file(configFile);
     if (!file.is_open()) {
-        throw std::runtime_error("Failed to open config file: " + configFile);
+        LOG_ERROR("Failed to open configuration file: {}", configFile);
     }
 
     json root;
@@ -118,7 +115,7 @@ void Config::loadConfigFile(const std::string& configFile) {
         } else if (value.is_number()) {
             m_configData[key] = std::to_string(value.get<double>());
         } else {
-            throw std::runtime_error("Unsupported data type in config file for key: " + key);
+            LOG_WARN("Invalid value type for key: {}", key);
         }
     }
 }  

@@ -1,6 +1,24 @@
 #pragma once
 #include <vector>
 #include <utility>
+#include "spdlog/fmt/ostr.h"
+
+enum class Difficulty { EASY, MEDIUM, HARD };
+
+namespace fmt {
+    template <>
+    struct formatter<Difficulty> : formatter<std::string> {
+       auto format(Difficulty d, format_context& ctx) {
+           std::string name;
+           switch (d) {
+              case Difficulty::EASY: name = "EASY"; break;
+              case Difficulty::MEDIUM: name = "MEDIUM"; break;
+              case Difficulty::HARD: name = "HARD"; break;
+           }
+           return formatter<std::string>::format(name, ctx);
+       }
+    };
+}
 
 /**
  * @class Maze
@@ -16,17 +34,6 @@
 class Maze {
 public:
     /**
-     * @enum Maze::Difficulty
-     * @brief Defines the difficulty levels for the maze.
-     * 
-     * The difficulty levels determine the complexity of the maze.
-     * - EASY: Simple maze with fewer dead ends.
-     * - MEDIUM: Moderate maze with a balanced number of dead ends.
-     * - HARD: Complex maze with many dead ends.
-     */
-    enum Difficulty { EASY, MEDIUM, HARD };
-
-    /**
      * @fn Maze::Maze(int width, int height, Difficulty difficulty)
      * @brief Constructs a Maze object with specified dimensions and difficulty.
      * @param width The width of the maze.
@@ -35,7 +42,7 @@ public:
      */
     Maze(int width, int height, Difficulty difficulty);
 
-    void displayMaze(const std::vector<std::vector<int>>& grid, bool raw = false);
+    void displayMaze();
 
     /**
      * @fn const std::vector<std::vector<char>>& Maze::getMaze() const
@@ -59,6 +66,8 @@ public:
      */
     std::pair<int, int> getPlayerPosition() const;
 
+    void pickItem(int x, int y);
+
 private:
     /**
      * @fn void Maze::generateItems(int itemCount)
@@ -74,16 +83,9 @@ private:
      */
     void createMaze(Difficulty difficulty);
 
-    void createEasyMaze();
-    void createMediumMaze();
-    void createHardMaze();
-
-    /**
-     * @fn void Maze::placeItems(int itemCount)
-     * @brief Places a specified number of items within the maze.
-     * @param itemCount The number of items to place in the maze.
-     */
-    void placeItems(int itemCount);
+    void createWilsonMaze();
+    void createKruskalMaze();
+    void createDepthFirstMaze();
 
     int width;
     int height;

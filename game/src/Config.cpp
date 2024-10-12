@@ -12,6 +12,7 @@ int Config::MAZE_WIDTH;
 int Config::MAZE_HEIGHT;
 int Config::SCREEN_WIDTH;
 int Config::SCREEN_HEIGHT;
+int Config::MIN_HELP_WINDOW_HEIGHT;
 int Config::EXPLORE_RADIUS;
 int Config::COMPLETED_MAZES_TO_WIN;
 int Config::MAX_ITEMS_IN_MAZE_SECTION;
@@ -39,8 +40,9 @@ void Config::resetConst() {
     PLAYER_MOVEMENT_SPEED = 5.0f;
     MAZE_WIDTH = 10;
     MAZE_HEIGHT = 10;
-    SCREEN_WIDTH = 800;
-    SCREEN_HEIGHT = 600;
+    SCREEN_WIDTH = 120;
+    SCREEN_HEIGHT = 30;
+    MIN_HELP_WINDOW_HEIGHT = 5;
     EXPLORE_RADIUS = 5;
     COMPLETED_MAZES_TO_WIN = 3;
     MAX_ITEMS_IN_MAZE_SECTION = 10;
@@ -56,6 +58,7 @@ void Config::init(const std::string& configFile) {
         MAZE_HEIGHT = config.getInt("MAZE_HEIGHT");
         SCREEN_WIDTH = config.getInt("SCREEN_WIDTH");
         SCREEN_HEIGHT = config.getInt("SCREEN_HEIGHT");
+        MIN_HELP_WINDOW_HEIGHT = config.getInt("MIN_HELP_WINDOW_HEIGHT");
         EXPLORE_RADIUS = config.getInt("EXPLORE_RADIUS");
         COMPLETED_MAZES_TO_WIN = config.getInt("COMPLETED_MAZES_TO_WIN");
         MAX_ITEMS_IN_MAZE_SECTION = config.getInt("MAX_ITEMS_IN_MAZE_SECTION");
@@ -69,11 +72,10 @@ void Config::init(const std::string& configFile) {
         TURN_RIGHT = config.getString("TURN_RIGHT");
         OPEN_MAP = config.getString("OPEN_MAP");
 
-        // Move to Check.cpp
-        if (MAZE_WIDTH > SCREEN_WIDTH || MAZE_HEIGHT > SCREEN_HEIGHT) {
+        if (!Check::checkConst())
+        {
             resetConst();
         }
-
 
         if (!Check::checkKeybindings())
         {

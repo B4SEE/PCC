@@ -7,6 +7,34 @@
 
 #define watch(x) std::cout << (#x) << " is " << (x) << std::endl
 
+bool Check::checkConst() {
+    if (Config::SCREEN_WIDTH < 0 || Config::SCREEN_HEIGHT < 0) {
+        return false;
+    }
+    if (Config::MAZE_WIDTH < 0 || Config::MAZE_HEIGHT < 0) {
+        return false;
+    }
+    if (Config::MAZE_WIDTH < Config::MAZE_HEIGHT) {
+        // adjust maze size
+        Config::MAZE_WIDTH = Config::MAZE_HEIGHT;
+    }
+    if (Config::MIN_HELP_WINDOW_HEIGHT < 0) {
+        Config::MIN_HELP_WINDOW_HEIGHT = 0;
+    }
+    if (Config::SCREEN_WIDTH > 120 || Config::SCREEN_HEIGHT > 30) {
+        return false;
+    }
+    if (Config::MAZE_WIDTH > (Config::SCREEN_WIDTH * 0.75) || Config::MAZE_HEIGHT > (Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT)) {
+        // adjust maze size
+        Config::MAZE_HEIGHT = Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT;
+        // width is always 75% of the console width
+        Config::MAZE_WIDTH = Config::SCREEN_WIDTH * 0.75;
+    }
+    return true;
+    // other constants check here
+}
+
+
 bool Check::checkKeybindings() {
     std::string keybinds[] = {
         Config::MOVE_FORWARD,

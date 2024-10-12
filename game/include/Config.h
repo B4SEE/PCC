@@ -45,6 +45,8 @@ public:
      */
     static int SCREEN_HEIGHT;
 
+    static int MIN_HELP_WINDOW_HEIGHT;
+
     /**
      * @var int Config::EXPLORE_RADIUS
      * The radius within which the player can explore.

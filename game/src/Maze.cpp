@@ -24,6 +24,7 @@ void Maze::generateItems(int itemCount) {
         if (displayGrid[y][x] == 0) {
             displayGrid[y][x] = 3;
             itemsPosition.push_back(std::make_pair(x, y));
+            totalItems++;
         }
     }
 }
@@ -31,6 +32,7 @@ void Maze::generateItems(int itemCount) {
 void Maze::pickItem(int x, int y) {
     if (displayGrid[y][x] == 3) {
         displayGrid[y][x] = 0;
+        itemsCollected++;
     }
 }
 

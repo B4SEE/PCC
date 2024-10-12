@@ -76,5 +76,7 @@ private:
     std::vector<std::vector<int>> mazeMap;
     std::vector<std::vector<int>> displayGrid;
     std::vector<std::pair<int, int>> itemsPosition;
+    int itemsCollected = 0;
+    int totalItems = 0;
     std::pair<int, int> playerPosition = std::make_pair(1, 1);
 };

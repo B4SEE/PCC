@@ -1,24 +1,8 @@
 #pragma once
 #include <vector>
 #include <utility>
-#include "spdlog/fmt/ostr.h"
 
 enum class Difficulty { EASY, MEDIUM, HARD };
-
-namespace fmt {
-    template <>
-    struct formatter<Difficulty> : formatter<std::string> {
-       auto format(Difficulty d, format_context& ctx) {
-           std::string name;
-           switch (d) {
-              case Difficulty::EASY: name = "EASY"; break;
-              case Difficulty::MEDIUM: name = "MEDIUM"; break;
-              case Difficulty::HARD: name = "HARD"; break;
-           }
-           return formatter<std::string>::format(name, ctx);
-       }
-    };
-}
 
 /**
  * @class Maze

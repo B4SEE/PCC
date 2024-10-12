@@ -3,7 +3,6 @@
 #include <sstream>
 #include <nlohmann/json.h>
 #include "Check.h"
-#include "Log.h"
 
 using json = nlohmann::json;
 
@@ -49,7 +48,6 @@ void Config::resetConst() {
 }
 
 void Config::init(const std::string& configFile) {
-    LOG_INFO("Loading configuration file: {}", configFile);
     const Config config(configFile);
     try
     {
@@ -74,24 +72,18 @@ void Config::init(const std::string& configFile) {
         // Move to Check.cpp
         if (MAZE_WIDTH > SCREEN_WIDTH || MAZE_HEIGHT > SCREEN_HEIGHT) {
             resetConst();
-            LOG_WARN("Maze dimensions exceed screen dimensions, default values loaded");
         }
 
-        LOG_INFO("Configuration file loaded");
 
         if (!Check::checkKeybindings())
         {
             resetKeybindings();
-            LOG_WARN("Invalid keybindings, default values loaded");
         }
-
-        LOG_INFO("Keybindings loaded");
     }
     catch (const std::exception& e)
     {
         resetConst();
         resetKeybindings();
-        LOG_ERROR("Failed to load configuration file: {}", e.what());
     }
 }
 
@@ -103,7 +95,7 @@ Config::Config(const std::string& configFile) {
 void Config::loadConfigFile(const std::string& configFile) {
     std::ifstream file(configFile);
     if (!file.is_open()) {
-        LOG_ERROR("Failed to open configuration file: {}", configFile);
+        return;
     }
 
     json root;
@@ -114,8 +106,6 @@ void Config::loadConfigFile(const std::string& configFile) {
             m_configData[key] = value.get<std::string>();
         } else if (value.is_number()) {
             m_configData[key] = std::to_string(value.get<double>());
-        } else {
-            LOG_WARN("Invalid value type for key: {}", key);
         }
     }
 }  

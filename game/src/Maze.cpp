@@ -7,7 +7,7 @@
 #include <ctime>
 #include <stack>
 #include "Maze.h"
-#include "Log.h"
+#include <functional>
 
 #include <algorithm>
 
@@ -31,7 +31,6 @@ void Maze::generateItems(int itemCount) {
 void Maze::pickItem(int x, int y) {
     if (displayGrid[y][x] == 3) {
         displayGrid[y][x] = 0;
-        LOG_INFO("Item picked up at position ({}, {})", x, y);
     }
 }
 
@@ -72,11 +71,6 @@ void Maze::createMaze(Difficulty difficulty) {
 }
 
 void Maze::displayMaze() {
-    // clear screen
-    std::cout << "\033[2J";
-    // move cursor to top left
-    std::cout << "\033[0;0H";
-
     if (displayGrid.empty()) {
         return;
     }
@@ -98,8 +92,8 @@ void Maze::displayMaze() {
                     std::cout << "\033[1;31mo\033[0m";
                     break;
                 case 3:
-                    // yellow item
-                    std::cout << "\033[1;33m*\033[0m";
+                    // green item
+                    std::cout << "\033[1;32m*\033[0m";
                     break;
                 default:
                     // unknown value
@@ -109,6 +103,9 @@ void Maze::displayMaze() {
         }
         std::cout << std::endl;
     }
+
+    // flush the output stream
+    std::cout.flush();
 }
 
 

@@ -54,6 +54,18 @@ std::pair<int, int> Maze::getPlayerPosition() const {
     return playerPosition;
 }
 
+int Maze::getItemsCollected() const {
+    return itemsCollected;
+}
+
+int Maze::getTotalItems() const {
+    return totalItems;
+}
+
+const std::vector<std::vector<int>>& Maze::getDisplayGrid() const {
+    return displayGrid;
+}
+
 const std::vector<std::vector<int>>& Maze::getMaze() const {
     return displayGrid;
 }
@@ -71,46 +83,6 @@ void Maze::createMaze(Difficulty difficulty) {
             break;
     }
 }
-
-void Maze::displayMaze() {
-    if (displayGrid.empty()) {
-        return;
-    }
-
-    for (auto & y : displayGrid) {
-        for (int x : y) {
-            // use switch statement to set color based on value
-            switch (x) {
-                case 0:
-                    // empty space
-                    std::cout << " ";
-                    break;
-                case 1:
-                    // wall
-                    std::cout << "#";
-                    break;
-                case 2:
-                    // red player
-                    std::cout << "\033[1;31mo\033[0m";
-                    break;
-                case 3:
-                    // green item
-                    std::cout << "\033[1;32m*\033[0m";
-                    break;
-                default:
-                    // unknown value
-                    std::cout << "?";
-                    break;
-            }
-        }
-        std::cout << std::endl;
-    }
-
-    // flush the output stream
-    std::cout.flush();
-}
-
-
 
 // Use Wilson's algorithm to generate a maze
 void Maze::createWilsonMaze() {
@@ -213,11 +185,11 @@ void Maze::createWilsonMaze() {
         }
     }
 
-    // Place items in the maze
-    generateItems(5);
-
     // Set exit
     displayGrid[displayGrid.size() - 2][displayGrid[0].size() - 1] = 0;
+
+    // Place items in the maze
+    generateItems(5);
 
     // Set player position
     setPlayerPosition(1, 1);
@@ -278,11 +250,11 @@ void Maze::createKruskalMaze() {
         }
     }
 
-    // Place items in the maze
-    generateItems(5);
-
     // Set exit
     displayGrid[displayGrid.size() - 2][displayGrid[0].size() - 1] = 0;
+
+    // Place items in the maze
+    generateItems(5);
 
     // Set player position
     setPlayerPosition(1, 1);
@@ -340,11 +312,11 @@ void Maze::createDepthFirstMaze() {
         }
     }
 
-    // Place items in the maze
-    generateItems(5);
-
     // Set exit
     displayGrid[displayGrid.size() - 2][displayGrid[0].size() - 1] = 0;
+
+    // Place items in the maze
+    generateItems(5);
 
     // Set player position
     setPlayerPosition(1, 1);

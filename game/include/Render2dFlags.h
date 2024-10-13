@@ -1,20 +1,16 @@
 #pragma once
 
-class RenderFlags {
+class Render2dFlags {
 public:
-    bool clearScreen = false;
-    bool drawMaze = false;
-    bool drawInputLine = false;
-    bool showLogs = false;
-    bool showHelpInstructions = false;
-    bool updateCollectedItems = false;
+    static bool clearScreen;
+    static bool resetConsole;
+    static bool drawMaze;
+    static bool drawInputLine;
+    static bool showLogs;
+    static bool showHelpInstructions;
+    static bool helpInstructionsAreVisible;
+    static bool updateCollectedItems;
+    static bool showAllMaze;
 
-    void reset() {
-        clearScreen = false;
-        drawMaze = false;
-        drawInputLine = false;
-        showLogs = false;
-        showHelpInstructions = false;
-        updateCollectedItems = false;
-    }
+    void reset();
 };

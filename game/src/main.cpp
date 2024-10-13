@@ -1,9 +1,8 @@
 #include "Renderer_2d.h"
-#include <vector>
+#include "Render2dFlags.h"
 #include <iostream>
-#include <thread>
-#include <chrono>
 #include <Config.h>
+#include <sstream>
 
 // void walkInMaze(Maze& maze);
 // void redrawMaze(Maze& maze);
@@ -13,8 +12,41 @@ int main() {
 
     Renderer_2d renderer;
     renderer.drawSubConsole();
-    // wait for 5 seconds
-    std::this_thread::sleep_for(std::chrono::seconds(60));
+
+    std::string userInput;
+    while (true) {
+        std::getline(std::cin, userInput);
+        if (userInput == "exit") {
+            renderer.stop();
+            break;
+        }
+        renderer.addHelpString(userInput);
+        renderer.showHelp();
+        renderer.clearInputLine();
+
+        //check if user input starts with maze
+        // Check if user input starts with "maze"
+        if (userInput.rfind("maze", 0) == 0) {
+            std::istringstream iss(userInput);
+            std::string command, difficultyStr;
+            iss >> command >> difficultyStr;
+
+            Difficulty difficulty = Difficulty::EASY; // Default difficulty
+            if (difficultyStr == "MEDIUM") {
+                difficulty = Difficulty::MEDIUM;
+            }
+            if (difficultyStr == "HARD") {
+                difficulty = Difficulty::HARD;
+            }
+
+            // Create maze with specified difficulty
+            Maze maze(Config::MAZE_WIDTH / 2, Config::MAZE_HEIGHT / 2, difficulty);
+
+            renderer.setMaze(maze);
+            renderer.drawSubConsole();
+            userInput = "";
+        }
+    }
 
     return 0;
 }

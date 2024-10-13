@@ -1,4 +1,3 @@
-// include/Renderer_2d.h
 #pragma once
 
 #include <thread>
@@ -7,8 +6,6 @@
 #include <mutex>
 #include <condition_variable>
 #include <Maze.h>
-
-#include "Render2dFlags.h"
 
 /**
  * @class Renderer_2d
@@ -23,16 +20,22 @@ public:
     void stop();
 
     void drawMaze();
+    void drawItemCounter();
     void drawInputLine();
     void clearInputLine();
-    void redrawMaze();
     void showHelp();
 
     void drawSubConsole();
 
     void setMaze(Maze& maze);
 
+    void addHelpString(const std::string& helpString);
+
+    void notify();
+
 private:
+    void drawSeparator(const std::string& cursorPosition);
+    void drawBorders();
     void renderLoop();
     void setConsoleDimensions();
     void calculateSubConsole();
@@ -56,14 +59,14 @@ private:
 
     int helpWindowHeight;
 
-    // Escape sequences (cursor positioning)
     std::string subConsoleStart;
     std::string subConsoleEnd;
     std::string mazeWindowStart;
     std::string mazeWindowEnd;
-    std::string inputLineStart; //always one line
+    std::string itemCounterStart;
+    std::string inputLineStart;
     std::string helpWindowFirstLine;
     std::string helpWindowLastLine;
 
-    static RenderFlags renderFlags;
+    std::vector<std::string> helpStrings;
 };

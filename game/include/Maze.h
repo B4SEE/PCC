@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <utility>
+#include <mutex>
 
 enum class Difficulty { EASY, MEDIUM, HARD };
 
@@ -50,8 +51,12 @@ public:
      */
     std::pair<int, int> getPlayerPosition() const;
 
-    void pickItem(int x, int y);
+    int getItemsCollected() const;
+    int getTotalItems() const;
 
+    const std::vector<std::vector<int>>& getDisplayGrid() const;
+
+    void pickItem(int x, int y);
 private:
     /**
      * @fn void Maze::generateItems(int itemCount)

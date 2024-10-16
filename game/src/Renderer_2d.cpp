@@ -14,9 +14,9 @@ Renderer_2d::~Renderer_2d() {
 }
 
 void Renderer_2d::notify() {
+    std::unique_lock<std::mutex> lock(renderMutex);
     renderCondition.notify_all();
 }
-
 
 void Renderer_2d::start() {
     running = true;
@@ -25,6 +25,7 @@ void Renderer_2d::start() {
 
 void Renderer_2d::stop() {
     {
+        std::unique_lock<std::mutex> lock(renderMutex);
         running = false;
     }
     renderCondition.notify_all();
@@ -277,39 +278,44 @@ void Renderer_2d::addHelpString(const std::string& helpString) {
 
 void Renderer_2d::renderLoop() {
     while (running) {
-        // if (Render2dFlags::clearScreen) {
-        //     clearScreen();
-        //     Render2dFlags::clearScreen = false;
-        // }
-        //
-        // if (Render2dFlags::resetConsole) {
-        //     clearScreen();
-        //     calculateSubConsole();
-        //     drawSubConsole();
-        //     Render2dFlags::resetConsole = false;
-        // }
-        //
-        // if (Render2dFlags::updateCollectedItems) {
-        //     drawItemCounter();
-        //     clearInputLine();
-        //     Render2dFlags::updateCollectedItems = false;
-        // }
-        //
-        // if (Render2dFlags::drawMaze) {
-        //     drawMaze();
-        //     clearInputLine();
-        //     Render2dFlags::drawMaze = false;
-        // }
-        //
-        // if (Render2dFlags::drawInputLine) {
-        //     clearInputLine();
-        //     Render2dFlags::drawInputLine = false;
-        // }
-        //
-        // if (Render2dFlags::showHelpInstructions) {
-        //     showHelp();
-        //     clearInputLine();
-        //     Render2dFlags::showHelpInstructions = false;
-        // }
+        std::unique_lock<std::mutex> lock(renderMutex);
+        renderCondition.wait(lock, [] {
+            return Render2dFlags::clearScreen || Render2dFlags::resetConsole || Render2dFlags::updateCollectedItems || Render2dFlags::drawMaze || Render2dFlags::drawInputLine || Render2dFlags::showHelpInstructions;
+        });
+
+        if (Render2dFlags::clearScreen) {
+            clearScreen();
+            Render2dFlags::clearScreen = false;
+        }
+
+        if (Render2dFlags::resetConsole) {
+            clearScreen();
+            calculateSubConsole();
+            drawSubConsole();
+            Render2dFlags::resetConsole = false;
+        }
+
+        if (Render2dFlags::updateCollectedItems) {
+            drawItemCounter();
+            clearInputLine();
+            Render2dFlags::updateCollectedItems = false;
+        }
+
+        if (Render2dFlags::drawMaze) {
+            drawMaze();
+            clearInputLine();
+            Render2dFlags::drawMaze = false;
+        }
+
+        if (Render2dFlags::drawInputLine) {
+            clearInputLine();
+            Render2dFlags::drawInputLine = false;
+        }
+
+        if (Render2dFlags::showHelpInstructions) {
+            showHelp();
+            clearInputLine();
+            Render2dFlags::showHelpInstructions = false;
+        }
     }
 }

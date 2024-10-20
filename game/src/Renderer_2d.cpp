@@ -4,8 +4,14 @@
 #include <windows.h>
 #endif
 #include <chrono>
+#include <fstream>
 #include <Config.h>
 #include <Render2dFlags.h>
+
+std::ofstream logRenFile("log2.txt");
+void logRen(const std::string& message) {
+    logRenFile << message << std::endl;
+}
 
 Renderer_2d::Renderer_2d() : running(false), consoleWidth(0), consoleHeight(0), subConsoleWidth(0), subConsoleHeight(0), maze(nullptr) {}
 
@@ -35,9 +41,82 @@ void Renderer_2d::stop() {
 }
 
 void Renderer_2d::drawMaze() {
+    if (maze == nullptr) {
+        return;
+    }
+
+    std::cout << mazeWindowStart;
+
+    std::pair<int, int> playerPosition = maze->getPlayerPosition();
+    int playerX = playerPosition.first;
+    int playerY = playerPosition.second;
+    int exploreRadius = Config::EXPLORE_RADIUS;
+
+    std::vector<std::vector<int>> displayGrid = maze->getDisplayGrid();
+
+    try {
+        for (int x = 0; x < displayGrid.size(); ++x) {
+            for (int y = 0; y < displayGrid[0].size(); ++y) {
+                if (std::abs(playerX - x) <= exploreRadius && std::abs(playerY - y) <= exploreRadius) {
+                    switch (displayGrid[x][y]) {
+                        case 0:
+                            std::cout << " ";
+                            break;
+                        case 1:
+                            std::cout << "#";
+                            break;
+                        case 2:
+                            std::cout << "\033[1;31mo\033[0m";
+                            break;
+                        case 3:
+                            std::cout << "\033[1;32m*\033[0m";
+                            break;
+                        case 4:
+                            std::cout << "\033[1;34mX\033[0m";
+                            break;
+                        default:
+                            std::cout << "?";
+                            break;
+                    }
+                } else {
+                    std::cout << "X";
+                }
+            }
+            std::cout << std::endl;
+            std::cout << "\033[1C";
+        }
+
+        std::cout.flush();
+    } catch (const std::exception& e) {
+        logRen("Error drawing maze: " + std::string(e.what()));
+    }
+}
+
+void Renderer_2d::printWinMessage() {
+    // Clear the screen but keep the borders
+    clearScreen();
+    drawBorders();
+
+    std::string winMessage = "Congratulations! You Win!";
+    int messageLength = winMessage.length();
+
+    // Calculate the position to center the message
+    int centerX = (subConsoleWidth - messageLength) / 2;
+    int centerY = subConsoleHeight / 2;
+
+    // Move the cursor to the center position
+    std::cout << "\033[" << centerY << ";" << centerX << "H";
+
+    // Print the win message
+    std::cout << "\033[1;32m" << winMessage << "\033[0m" << std::endl;
+
+    std::cout.flush();
+}
+
+
+void Renderer_2d::drawAllMaze() {
     std::cout << mazeWindowStart;
     if (maze == nullptr) {
-        // Draw empty maze
         for (int i = 0; i < mazeWindowHeight; ++i) {
             for (int j = 0; j < mazeWindowWidth; ++j) {
                 std::cout << "#";
@@ -45,6 +124,7 @@ void Renderer_2d::drawMaze() {
             std::cout << std::endl;
             std::cout << "\033[1C";
         }
+        std::cout.flush();
         return;
     }
 
@@ -59,35 +139,31 @@ void Renderer_2d::drawMaze() {
 
     for (const auto& row : displayGrid) {
         for (int cell : row) {
-            // use switch statement to set color based on value
             switch (cell) {
                 case 0:
-                    // empty space
-                        std::cout << " ";
-                break;
+                    std::cout << " ";
+                    break;
                 case 1:
-                    // wall
-                        std::cout << "#";
-                break;
+                    std::cout << "#";
+                    break;
                 case 2:
-                    // red player
-                        std::cout << "\033[1;31mo\033[0m";
-                break;
+                    std::cout << "\033[1;31mo\033[0m";
+                    break;
                 case 3:
-                    // green item
-                        std::cout << "\033[1;32m*\033[0m";
-                break;
+                    std::cout << "\033[1;32m*\033[0m";
+                    break;
+                case 4:
+                    std::cout << "\033[1;34mX\033[0m";
+                    break;
                 default:
-                    // unknown value
-                        std::cout << "?";
-                break;
+                    std::cout << "?";
+                    break;
             }
         }
         std::cout << std::endl;
         std::cout << "\033[1C";
     }
 
-    // flush the output stream
     std::cout.flush();
 }
 
@@ -98,6 +174,7 @@ void Renderer_2d::drawInputLine() {
     }
     std::cout << std::endl;
     std::cout << "\033[1C";
+    std::cout.flush();
 }
 
 void Renderer_2d::clearInputLine() {
@@ -106,6 +183,7 @@ void Renderer_2d::clearInputLine() {
         std::cout << " ";
     }
     std::cout << inputLineStart;
+    std::cout.flush();
 }
 
 void Renderer_2d::drawItemCounter() {
@@ -117,6 +195,7 @@ void Renderer_2d::drawItemCounter() {
     }
     std::cout << itemCounterStart << "I: " << itemsCollected;
     std::cout << itemCounterStart << "\033[1B" << "T: " << totalItems;
+    std::cout.flush();
 }
 
 void Renderer_2d::showHelp() {
@@ -125,8 +204,11 @@ void Renderer_2d::showHelp() {
         if (i < helpStrings.size()) {
             for (int j = 0; j < subConsoleWidth - 2; ++j) {
                 if (j < helpStrings[i].size()) {
-                    // write lines in color
-                    std::cout << "\033[36m" << helpStrings[i][j] << "\033[0m";
+                    if (helpStrings[i][j] == '\n') {
+                        std::cout << " ";
+                    } else {
+                        std::cout << "\033[36m" << helpStrings[i][j] << "\033[0m";
+                    }
                 } else {
                     std::cout << " ";
                 }
@@ -135,11 +217,26 @@ void Renderer_2d::showHelp() {
             std::cout << "\033[1C";
         }
     }
+    std::cout.flush();
 }
 
-void Renderer_2d::setMaze(Maze& maze) {
-    this->maze = &maze;
+// void Renderer_2d::setMaze(Maze& maze) {
+//     log("Renderer_2d setMaze called");
+//     std::unique_lock<std::mutex> lock(renderMutex);
+//     this->maze = &maze;
+// }
+
+void Renderer_2d::setMaze(std::unique_ptr<Maze> newMaze) {
+    maze = std::move(newMaze);
 }
+
+// void Renderer_2d::setMaze(Maze& maze) {
+//     log("Renderer_2d setMaze called");
+//     std::unique_lock<std::mutex> lock(renderMutex);
+//     this->maze = &maze;
+//     Render2dFlags::resetConsole = true;
+//     notify();
+// }
 
 void Renderer_2d::calculateSubConsole() {
     #ifdef _WIN32
@@ -149,36 +246,43 @@ void Renderer_2d::calculateSubConsole() {
         consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
     } else {
         std::cerr << "Error getting console buffer info" << std::endl;
-        consoleWidth = 120; // Default width
-        consoleHeight = 30; // Default height
+        consoleWidth = 120;
+        consoleHeight = 30;
     }
     #else
     struct winsize size;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == 0) {
         consoleWidth = size.ws_col;
         consoleHeight = size.ws_row;
+        log("Console dimensions (Unix): Width = " + std::to_string(consoleWidth) + ", Height = " + std::to_string(consoleHeight));
     } else {
         std::cerr << "Error getting console window size" << std::endl;
-        consoleWidth = 120; // Default width
-        consoleHeight = 30; // Default height
+        log("Error getting console window size");
+        consoleWidth = 120;
+        consoleHeight = 30;
     }
     #endif
 
     std::cout << subConsoleStart;
 
-    // Calculate sub-console dimensions
     subConsoleWidth = consoleWidth;
     subConsoleHeight = consoleHeight;
 
     subConsoleStart = "\033[0;0H";
     subConsoleEnd = "\033[" + std::to_string(subConsoleHeight) + ";" + std::to_string(subConsoleWidth) + "H";
 
-    // Calculate escape sequences for cursor positioning
+    if (subConsoleWidth <= 0 || subConsoleHeight <= 0) {
+        return;
+    }
+
     if (maze == nullptr) {
         mazeWindowWidth = Config::MAZE_WIDTH;
         mazeWindowHeight = Config::MAZE_HEIGHT;
     } else {
-        const auto& displayGrid = maze->getDisplayGrid();
+        std::vector<std::vector<int>> displayGrid;
+        {
+            displayGrid = maze->getDisplayGrid();
+        }
 
         if (displayGrid.empty() || displayGrid[0].empty()) {
             std::cerr << "Error: displayGrid is empty" << std::endl;
@@ -201,11 +305,9 @@ void Renderer_2d::calculateSubConsole() {
     helpWindowFirstLine = "\033[" + std::to_string(subConsoleHeight - helpWindowHeight) + ";2H";
     helpWindowLastLine = "\033[" + std::to_string(subConsoleHeight - 1) + ";2H";
 
-    // set size for help strings
     helpStrings.resize(helpWindowHeight);
-    //init help strings with empty strings
     for (int i = 0; i < helpStrings.size(); ++i) {
-        if (helpStrings[i].empty()) { // to avoid deleting existing help strings when resizing
+        if (helpStrings[i].empty()) {
             helpStrings[i] = "";
         }
     }
@@ -216,27 +318,24 @@ void Renderer_2d::drawSeparator(const std::string& cursorPosition) {
     for (int i = 0; i < subConsoleWidth - 2; ++i) {
         std::cout << "-";
     }
+    std::cout.flush();
 }
 
 void Renderer_2d::drawBorders() {
-    // Draw top border
     std::cout << subConsoleStart;
     for (int i = 0; i < subConsoleWidth; ++i) {
         std::cout << "*";
     }
-    // Draw side borders
     for (int i = 1; i < subConsoleHeight - 1; ++i) {
         std::cout << "\033[" << i + 1 << ";1H*";
         std::cout << "\033[" << i + 1 << ";" << subConsoleWidth << "H*";
     }
-    // Draw bottom border
     std::cout << "\033[" << subConsoleHeight << ";1H";
     for (int i = 0; i < subConsoleWidth; ++i) {
         std::cout << "*";
     }
     std::cout.flush();
 }
-
 
 void Renderer_2d::drawSubConsole() {
     clearScreen();
@@ -250,7 +349,6 @@ void Renderer_2d::drawSubConsole() {
     drawSeparator(inputLineStart + "\033[1B");
     showHelp();
 
-    // check positioning
     std::cout << subConsoleStart << "S";
     std::cout << subConsoleEnd << "S";
     std::cout << mazeWindowStart << "M";
@@ -263,24 +361,32 @@ void Renderer_2d::drawSubConsole() {
 }
 
 void Renderer_2d::clearScreen() {
-    std::cout << "\033[0;0H" << "\033[2J"; // Clear screen and move cursor to home position
+    std::cout << "\033[0;0H" << "\033[2J";
     std::cout.flush();
 }
 
 void Renderer_2d::addHelpString(const std::string& helpString) {
-    // move all messages left (remove first, add new at the end)
     for (int i = 0; i < helpStrings.size() - 1; ++i) {
         helpStrings[i] = helpStrings[i + 1];
     }
     helpStrings[helpStrings.size() - 1] = helpString;
+    clearInputLine();
     notify();
 }
 
 void Renderer_2d::renderLoop() {
     while (running) {
         std::unique_lock<std::mutex> lock(renderMutex);
-        renderCondition.wait(lock, [] {
-            return Render2dFlags::clearScreen || Render2dFlags::resetConsole || Render2dFlags::updateCollectedItems || Render2dFlags::drawMaze || Render2dFlags::drawInputLine || Render2dFlags::showHelpInstructions;
+        renderCondition.wait(lock, [this] {
+            return !running || 
+               Render2dFlags::clearScreen || 
+               Render2dFlags::resetConsole || 
+               Render2dFlags::updateCollectedItems || 
+               Render2dFlags::drawMaze || 
+               Render2dFlags::drawInputLine || 
+               Render2dFlags::showHelpInstructions || 
+               Render2dFlags::redrawPlayer || 
+               Render2dFlags::printWinMessage;
         });
 
         if (Render2dFlags::clearScreen) {
@@ -301,12 +407,6 @@ void Renderer_2d::renderLoop() {
             Render2dFlags::updateCollectedItems = false;
         }
 
-        if (Render2dFlags::drawMaze) {
-            drawMaze();
-            clearInputLine();
-            Render2dFlags::drawMaze = false;
-        }
-
         if (Render2dFlags::drawInputLine) {
             clearInputLine();
             Render2dFlags::drawInputLine = false;
@@ -316,6 +416,22 @@ void Renderer_2d::renderLoop() {
             showHelp();
             clearInputLine();
             Render2dFlags::showHelpInstructions = false;
+        }
+
+        if (Render2dFlags::redrawPlayer) {
+            if (Render2dFlags::showAllMaze) {
+                drawAllMaze();
+            } else {
+                drawMaze();
+            }
+            drawItemCounter();
+            clearInputLine();
+            Render2dFlags::redrawPlayer = false;
+        }
+
+        if (Render2dFlags::printWinMessage) {
+            printWinMessage();
+            Render2dFlags::printWinMessage = false;
         }
     }
 }

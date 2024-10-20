@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
 #include <utility>
-#include <mutex>
+#include <atomic>
+#include <condition_variable>
+#include <thread>
 
 enum class Difficulty { EASY, MEDIUM, HARD };
 
@@ -27,6 +29,8 @@ public:
      */
     Maze(int width, int height, Difficulty difficulty);
 
+    ~Maze();
+
     void displayMaze();
 
     /**
@@ -51,12 +55,16 @@ public:
      */
     std::pair<int, int> getPlayerPosition() const;
 
+    std::pair<int, int> getExitPosition() const;
+
     int getItemsCollected() const;
     int getTotalItems() const;
 
     const std::vector<std::vector<int>>& getDisplayGrid() const;
 
-    void pickItem(int x, int y);
+    // bool isGenerated() const;
+    //
+    // void waitForGeneration();
 private:
     /**
      * @fn void Maze::generateItems(int itemCount)
@@ -76,6 +84,8 @@ private:
     void createKruskalMaze();
     void createDepthFirstMaze();
 
+    void endMazeGeneration();
+
     int width;
     int height;
     std::vector<std::vector<int>> mazeMap;
@@ -84,4 +94,10 @@ private:
     int itemsCollected = 0;
     int totalItems = 0;
     std::pair<int, int> playerPosition = std::make_pair(1, 1);
+    std::pair<int, int> exitPosition;
+
+    // std::atomic<bool> generated{false};
+    // std::thread generationThread;
+    // mutable std::mutex gridMutex;
+    // std::condition_variable cv;
 };

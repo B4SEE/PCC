@@ -9,6 +9,8 @@ bool Render2dFlags::showHelpInstructions = false;
 bool Render2dFlags::helpInstructionsAreVisible = false;
 bool Render2dFlags::updateCollectedItems = false;
 bool Render2dFlags::showAllMaze = false;
+bool Render2dFlags::printWinMessage = false;
+bool Render2dFlags::redrawPlayer = false;
 
 void Render2dFlags::reset() {
     clearScreen = false;
@@ -20,4 +22,6 @@ void Render2dFlags::reset() {
     helpInstructionsAreVisible = false;
     updateCollectedItems = false;
     showAllMaze = false;
+    printWinMessage = false;
+    redrawPlayer = false;
 }

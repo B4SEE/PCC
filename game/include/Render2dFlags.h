@@ -11,6 +11,8 @@ public:
     static bool helpInstructionsAreVisible;
     static bool updateCollectedItems;
     static bool showAllMaze;
+    static bool printWinMessage;
+    static bool redrawPlayer;
 
     void reset();
 };

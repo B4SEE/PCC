@@ -19,7 +19,9 @@ public:
     void start();
     void stop();
 
+    void drawAllMaze();
     void drawMaze();
+    void printWinMessage();
     void drawItemCounter();
     void drawInputLine();
     void clearInputLine();
@@ -27,7 +29,7 @@ public:
 
     void drawSubConsole();
 
-    void setMaze(Maze& maze);
+    void setMaze(std::unique_ptr<Maze> maze);
 
     void addHelpString(const std::string& helpString);
 
@@ -45,7 +47,7 @@ private:
 
     std::thread renderThread;
     bool running;
-    Maze* maze;
+    std::unique_ptr<Maze> maze;
 
     std::condition_variable renderCondition;
 

@@ -41,11 +41,12 @@ private:
     void calculateSubConsole();
     void clearScreen();
 
+    std::mutex renderMutex;
+
     std::thread renderThread;
     bool running;
     Maze* maze;
 
-    std::mutex renderMutex;
     std::condition_variable renderCondition;
 
     // Console dimensions

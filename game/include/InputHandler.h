@@ -6,6 +6,7 @@
 #include <functional>
 #include <chrono>
 #include <string>
+#include <condition_variable>
 
 class InputHandler {
 public:
@@ -23,17 +24,23 @@ private:
     void run();
     void handleKeyPress(char key);
 
+    std::mutex inputMutex;
+
     std::thread inputThread;
     std::atomic<bool> running;
+    std::condition_variable inputCondition;
+
     bool requireEnter;
     std::function<void(const std::string&)> callback;
 
     std::chrono::steady_clock::time_point lastInputTime;
-    const std::chrono::milliseconds inputCooldown{200};
+    const std::chrono::milliseconds inputCooldown{300};
 
     KeyPressHandler keyPressHandler;
 
     std::string userInput;
+
+
 };
 
 #endif // INPUTHANDLER_H

@@ -28,7 +28,11 @@ void InputHandler::start() {
 }
 
 void InputHandler::stop() {
-    running = false;
+    {
+        std::lock_guard<std::mutex> lock(inputMutex);
+        running = false;
+    }
+    inputCondition.notify_all();
     if (inputThread.joinable()) {
         inputThread.join();
     }
@@ -36,17 +40,29 @@ void InputHandler::stop() {
 
 void InputHandler::run() {
     while (running) {
-        char key;
+        std::unique_lock<std::mutex> lock(inputMutex);
+        if (!running) break;
+
         if (requireEnter) {
-            key = std::getline(std::cin, userInput).get();
+            if (inputCondition.wait_for(lock, std::chrono::milliseconds(100), [this] { return !running; })) {
+                break;
+            }
+            std::getline(std::cin, userInput);
+            handleKeyPress(' ');
         } else {
-#ifdef _WIN32
-            key = _getch();
-#else
-            key = getchar();
-#endif
+            #ifdef _WIN32
+            if (inputCondition.wait_for(lock, std::chrono::milliseconds(10), [this] { return !running; })) {
+                break;
+            }
+            char key = _getch();
+            #else
+            if (inputCondition.wait_for(lock, std::chrono::milliseconds(10), [this] { return !running; })) {
+                break;
+            }
+            char key = getchar();
+            #endif
+            handleKeyPress(key);
         }
-        handleKeyPress(key);
     }
 }
 
@@ -62,7 +78,11 @@ void InputHandler::handleKeyPress(char key) {
                 keyPressHandler(std::string(1, key));
             }
         } else {
-            // Default behavior
+            if (key == 'q') {
+                running = false;
+            }
         }
+    } else {
+        userInput.clear();
     }
 }

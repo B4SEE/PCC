@@ -25,9 +25,9 @@ Nothing here yet
 
 ---
 
-## Infinitely generating maze with pseudo 3D ASCII view
+## Maze game with ASCII view
 
-This project is a semester assignment for the PCC winter course 2024/2025. It features maze game with an ASCII view.
+This project is a semester assignment for the PCC winter course 2024/2025. It features maze game with ASCII view.
 
 ---
 

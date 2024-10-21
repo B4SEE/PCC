@@ -11,12 +11,8 @@ bool Check::checkConst() {
     if (Config::SCREEN_WIDTH < 0 || Config::SCREEN_HEIGHT < 0) {
         return false;
     }
-    if (Config::MAZE_WIDTH < 0 || Config::MAZE_HEIGHT < 0) {
+    if (Config::MAZE_WIDTH <= 1 || Config::MAZE_HEIGHT <= 1) { // maze must be at least 2x2
         return false;
-    }
-    if (Config::MAZE_WIDTH < Config::MAZE_HEIGHT) {
-        // adjust maze size
-        Config::MAZE_WIDTH = Config::MAZE_HEIGHT;
     }
     if (Config::MIN_HELP_WINDOW_HEIGHT < 0) {
         Config::MIN_HELP_WINDOW_HEIGHT = 0;

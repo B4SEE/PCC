@@ -12,23 +12,15 @@
 #include <fstream>
 #include "Config.h"
 
-std::ofstream logFile("log.txt");
-void log(const std::string& message) {
-    logFile << message << std::endl;
-}
-
 Maze::Maze(int width, int height, Difficulty difficulty)
     : width(width), height(height) {
     createMaze(difficulty);
-    // generationThread = std::thread(&Maze::createMaze, this, difficulty);
 }
 
 Maze::~Maze() {}
 
 
 void Maze::generateItems(int itemCount) {
-    // std::unique_lock<std::mutex> lock(gridMutex);
-    // Randomly place items in the maze
     for (int i = 0; i < itemCount; i++) {
         int x = rand() % displayGrid[0].size();
         int y = rand() % displayGrid.size();
@@ -41,43 +33,34 @@ void Maze::generateItems(int itemCount) {
 }
 
 void Maze::setPlayerPosition(int x, int y) {
-    log("Setting player position");
-    log("grid size: " + std::to_string(displayGrid.size()) + ", " + std::to_string(displayGrid[0].size()));
-    
     if (x < 0 || x >= displayGrid.size() || y < 0 || y >= displayGrid[0].size()) {
-        log("Error: Attempted to set player position out of bounds: " + std::to_string(x) + ", " + std::to_string(y));
         return;
     }
 
     if (!displayGrid.empty()) {
         if (displayGrid[x][y] == 0) {
             try {
-                log("Setting player position to " + std::to_string(x) + ", " + std::to_string(y));
                 displayGrid[playerPosition.first][playerPosition.second] = 0;
                 displayGrid[x][y] = 2;
                 playerPosition = std::make_pair(x, y);
             } catch (const std::out_of_range& e) {
-                log("Error: Attempted to set player position out of bounds: " + std::to_string(x) + ", " + std::to_string(y));
                 exit(1);
             }
         }
 
         if (displayGrid[x][y] == 3) {
             try {
-                log("Setting player position to " + std::to_string(x) + ", " + std::to_string(y));
                 displayGrid[playerPosition.first][playerPosition.second] = 0;
                 displayGrid[x][y] = 2;
                 playerPosition = std::make_pair(x, y);
                 itemsCollected++;
             } catch (const std::out_of_range& e) {
-                log("Error: Attempted to set player position out of bounds: " + std::to_string(x) + ", " + std::to_string(y));
                 exit(1);
             }
         }
 
         if (displayGrid[x][y] == 4) {
             try {
-                log("Setting player position to " + std::to_string(x) + ", " + std::to_string(y));
                 if (itemsCollected == totalItems) {
                     displayGrid[playerPosition.first][playerPosition.second] = 0;
                     displayGrid[x][y] = 2;
@@ -123,14 +106,14 @@ const std::vector<std::vector<int>>& Maze::getMaze() const {
 void Maze::createMaze(Difficulty difficulty) {
     switch (difficulty) {
         case Difficulty::EASY:
-            createWilsonMaze();
-        break;
+            createDepthFirstMaze();
+            break;
         case Difficulty::MEDIUM:
             createKruskalMaze();
-        break;
+            break;
         case Difficulty::HARD:
-            createDepthFirstMaze();
-        break;
+            createWilsonMaze();
+            break;
     }
 }
 
@@ -139,12 +122,12 @@ void Maze::endMazeGeneration() {
     displayGrid[displayGrid.size() - 2][displayGrid[0].size() - 1] = 4;
     exitPosition = std::make_pair(displayGrid.size() - 2, displayGrid[0].size() - 1);
 
+    // Set player position
+    setPlayerPosition(1, 1);
+
     // generate int between Config::MIN_ITEMS and Config::MAX_ITEMS
     int itemCount = rand() % (Config::MAX_ITEMS_IN_MAZE_SECTION - Config::MIN_ITEMS_IN_MAZE_SECTION + 1) + Config::MIN_ITEMS_IN_MAZE_SECTION;
     generateItems(itemCount);
-
-    // Set player position
-    setPlayerPosition(1, 1);
 }
 
 // Use Wilson's algorithm to generate a maze

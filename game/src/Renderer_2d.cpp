@@ -2,6 +2,9 @@
 #include <iostream>
 #ifdef _WIN32
 #include <windows.h>
+#else
+#include <sys/ioctl.h>
+#include <unistd.h>
 #endif
 #include <chrono>
 #include <fstream>
@@ -20,7 +23,7 @@ Renderer_2d::~Renderer_2d() {
 }
 
 void Renderer_2d::notify() {
-    std::unique_lock<std::mutex> lock(renderMutex);
+    std::lock_guard<std::mutex> lock(renderMutex);
     renderCondition.notify_all();
 }
 
@@ -31,7 +34,7 @@ void Renderer_2d::start() {
 
 void Renderer_2d::stop() {
     {
-        std::unique_lock<std::mutex> lock(renderMutex);
+        std::lock_guard<std::mutex> lock(renderMutex);
         running = false;
     }
     renderCondition.notify_all();
@@ -47,18 +50,18 @@ void Renderer_2d::drawMaze() {
 
     std::cout << mazeWindowStart;
 
-    std::pair<int, int> playerPosition = maze->getPlayerPosition();
+    auto playerPosition = maze->getPlayerPosition();
     int playerX = playerPosition.first;
     int playerY = playerPosition.second;
     int exploreRadius = Config::EXPLORE_RADIUS;
 
-    std::vector<std::vector<int>> displayGrid = maze->getDisplayGrid();
+    auto displayGrid = maze->getDisplayGrid();
 
     try {
-        for (int x = 0; x < displayGrid.size(); ++x) {
-            for (int y = 0; y < displayGrid[0].size(); ++y) {
-                if (std::abs(playerX - x) <= exploreRadius && std::abs(playerY - y) <= exploreRadius) {
-                    switch (displayGrid[x][y]) {
+        for (size_t x = 0; x < displayGrid.size(); ++x) {
+            for (size_t y = 0; y < displayGrid[0].size(); ++y) {
+                if (std::abs(playerX - static_cast<int>(x)) <= exploreRadius && std::abs(playerY - static_cast<int>(y)) <= exploreRadius) {
+                    switch (displayGrid.at(x).at(y)) {
                         case 0:
                             std::cout << " ";
                             break;
@@ -85,34 +88,24 @@ void Renderer_2d::drawMaze() {
             std::cout << std::endl;
             std::cout << "\033[1C";
         }
-
-        std::cout.flush();
     } catch (const std::exception& e) {
         logRen("Error drawing maze: " + std::string(e.what()));
     }
 }
 
 void Renderer_2d::printWinMessage() {
-    // Clear the screen but keep the borders
     clearScreen();
     drawBorders();
 
     std::string winMessage = "Congratulations! You Win!";
     int messageLength = winMessage.length();
 
-    // Calculate the position to center the message
     int centerX = (subConsoleWidth - messageLength) / 2;
     int centerY = subConsoleHeight / 2;
 
-    // Move the cursor to the center position
     std::cout << "\033[" << centerY << ";" << centerX << "H";
-
-    // Print the win message
     std::cout << "\033[1;32m" << winMessage << "\033[0m" << std::endl;
-
-    std::cout.flush();
 }
-
 
 void Renderer_2d::drawAllMaze() {
     std::cout << mazeWindowStart;
@@ -124,14 +117,10 @@ void Renderer_2d::drawAllMaze() {
             std::cout << std::endl;
             std::cout << "\033[1C";
         }
-        std::cout.flush();
         return;
     }
 
-    std::vector<std::vector<int>> displayGrid;
-    {
-        displayGrid = maze->getDisplayGrid();
-    }
+    auto displayGrid = maze->getDisplayGrid();
 
     if (displayGrid.empty() || displayGrid[0].empty()) {
         return;
@@ -163,8 +152,6 @@ void Renderer_2d::drawAllMaze() {
         std::cout << std::endl;
         std::cout << "\033[1C";
     }
-
-    std::cout.flush();
 }
 
 void Renderer_2d::drawInputLine() {
@@ -174,7 +161,6 @@ void Renderer_2d::drawInputLine() {
     }
     std::cout << std::endl;
     std::cout << "\033[1C";
-    std::cout.flush();
 }
 
 void Renderer_2d::clearInputLine() {
@@ -183,7 +169,6 @@ void Renderer_2d::clearInputLine() {
         std::cout << " ";
     }
     std::cout << inputLineStart;
-    std::cout.flush();
 }
 
 void Renderer_2d::drawItemCounter() {
@@ -195,7 +180,6 @@ void Renderer_2d::drawItemCounter() {
     }
     std::cout << itemCounterStart << "I: " << itemsCollected;
     std::cout << itemCounterStart << "\033[1B" << "T: " << totalItems;
-    std::cout.flush();
 }
 
 void Renderer_2d::showHelp() {
@@ -217,26 +201,11 @@ void Renderer_2d::showHelp() {
             std::cout << "\033[1C";
         }
     }
-    std::cout.flush();
 }
-
-// void Renderer_2d::setMaze(Maze& maze) {
-//     log("Renderer_2d setMaze called");
-//     std::unique_lock<std::mutex> lock(renderMutex);
-//     this->maze = &maze;
-// }
 
 void Renderer_2d::setMaze(std::unique_ptr<Maze> newMaze) {
     maze = std::move(newMaze);
 }
-
-// void Renderer_2d::setMaze(Maze& maze) {
-//     log("Renderer_2d setMaze called");
-//     std::unique_lock<std::mutex> lock(renderMutex);
-//     this->maze = &maze;
-//     Render2dFlags::resetConsole = true;
-//     notify();
-// }
 
 void Renderer_2d::calculateSubConsole() {
     #ifdef _WIN32
@@ -254,10 +223,10 @@ void Renderer_2d::calculateSubConsole() {
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &size) == 0) {
         consoleWidth = size.ws_col;
         consoleHeight = size.ws_row;
-        log("Console dimensions (Unix): Width = " + std::to_string(consoleWidth) + ", Height = " + std::to_string(consoleHeight));
+        logRen("Console dimensions (Unix): Width = " + std::to_string(consoleWidth) + ", Height = " + std::to_string(consoleHeight));
     } else {
         std::cerr << "Error getting console window size" << std::endl;
-        log("Error getting console window size");
+        logRen("Error getting console window size");
         consoleWidth = 120;
         consoleHeight = 30;
     }
@@ -279,10 +248,7 @@ void Renderer_2d::calculateSubConsole() {
         mazeWindowWidth = Config::MAZE_WIDTH;
         mazeWindowHeight = Config::MAZE_HEIGHT;
     } else {
-        std::vector<std::vector<int>> displayGrid;
-        {
-            displayGrid = maze->getDisplayGrid();
-        }
+        auto displayGrid = maze->getDisplayGrid();
 
         if (displayGrid.empty() || displayGrid[0].empty()) {
             std::cerr << "Error: displayGrid is empty" << std::endl;
@@ -306,9 +272,9 @@ void Renderer_2d::calculateSubConsole() {
     helpWindowLastLine = "\033[" + std::to_string(subConsoleHeight - 1) + ";2H";
 
     helpStrings.resize(helpWindowHeight);
-    for (int i = 0; i < helpStrings.size(); ++i) {
-        if (helpStrings[i].empty()) {
-            helpStrings[i] = "";
+    for (auto& helpString : helpStrings) {
+        if (helpString.empty()) {
+            helpString = "";
         }
     }
 }
@@ -318,7 +284,6 @@ void Renderer_2d::drawSeparator(const std::string& cursorPosition) {
     for (int i = 0; i < subConsoleWidth - 2; ++i) {
         std::cout << "-";
     }
-    std::cout.flush();
 }
 
 void Renderer_2d::drawBorders() {
@@ -334,7 +299,6 @@ void Renderer_2d::drawBorders() {
     for (int i = 0; i < subConsoleWidth; ++i) {
         std::cout << "*";
     }
-    std::cout.flush();
 }
 
 void Renderer_2d::drawSubConsole() {
@@ -361,15 +325,28 @@ void Renderer_2d::drawSubConsole() {
 }
 
 void Renderer_2d::clearScreen() {
-    std::cout << "\033[0;0H" << "\033[2J";
-    std::cout.flush();
+    std::cout << subConsoleStart;
+    // Use OS-specific method to clear the screen
+    #ifdef _WIN32
+    system("cls");
+    #else
+    system("clear");
+    #endif
 }
 
 void Renderer_2d::addHelpString(const std::string& helpString) {
-    for (int i = 0; i < helpStrings.size() - 1; ++i) {
+    for (size_t i = 0; i < helpStrings.size() - 1; ++i) {
         helpStrings[i] = helpStrings[i + 1];
     }
-    helpStrings[helpStrings.size() - 1] = helpString;
+    helpStrings.back() = helpString;
+    clearInputLine();
+    notify();
+}
+
+void Renderer_2d::clearHelpStrings() {
+    for (auto& helpString : helpStrings) {
+        helpString = "";
+    }
     clearInputLine();
     notify();
 }

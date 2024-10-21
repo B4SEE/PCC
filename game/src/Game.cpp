@@ -1,12 +1,11 @@
 #include "Game.h"
 #include "Render2dFlags.h"
 #include <Config.h>
-#include <sstream>
 
 Game::Game()
     : inputHandler(false, [this](const std::string& userInput) {
         handleUserInput(userInput);
-    }), isRunning(false) {} // Initialize isRunning to false
+    }), isRunning(false) {}
 
 Game::~Game() {
     stop();
@@ -15,13 +14,16 @@ Game::~Game() {
 void Game::start() {
     Config::init("../resources/config.json");
     resetGame();
+    setup();
 
     renderer.start();
     Render2dFlags::resetConsole = true;
+    renderer.notify();
 
     inputHandler.start();
 
     isRunning = true;
+    canEnterInput = true;
     while (isRunning) {
         // Game loop logic
     }
@@ -33,17 +35,44 @@ void Game::stop() {
 }
 
 void Game::handleUserInput(const std::string& userInput) {
-    renderer.addHelpString(userInput);
+    if (canEnterInput) {
+        renderer.addHelpString(userInput);
 
-    if (inputHandler.getRequireEnter()) {
-        handleCommand(userInput);
-    } else {
-        handleKey(userInput);
+        if (inputHandler.getRequireEnter()) {
+            handleCommand(userInput);
+        } else {
+            handleKey(userInput);
+        }
+
+        Render2dFlags::showHelpInstructions = true;
+        renderer.notify();
     }
+}
 
+void Game::showHelp() {
+    renderer.addHelpString("Use WASD to move the player, L to toggle command line mode");
+    renderer.addHelpString("Type 'exit' to quit the game");
+    renderer.addHelpString("Type 'reset' to reset the console if you 'accidentally' break it");
+
+    std::string difficultyStr;
+    switch (difficulty) {
+        case Difficulty::EASY:
+            difficultyStr = "EASY";
+            break;
+        case Difficulty::MEDIUM:
+            difficultyStr = "MEDIUM";
+            break;
+        case Difficulty::HARD:
+            difficultyStr = "HARD";
+            break;
+    }
+    
+    renderer.addHelpString("Current difficulty: " + difficultyStr + ", mazes to complete: " + std::to_string(mazesToComplete));
+    renderer.addHelpString("Type 'difficulty EASY', 'difficulty MEDIUM' or 'difficulty HARD' to change difficulty");
     Render2dFlags::showHelpInstructions = true;
     renderer.notify();
 }
+
 
 void Game::handleKey(const std::string& key) {
     if (key == "w") {
@@ -56,14 +85,18 @@ void Game::handleKey(const std::string& key) {
         movePlayer(Direction::RIGHT);
     } else if (key == "L") {
         inputHandler.setRequireEnter(!inputHandler.getRequireEnter());
+    } else if (key == "H") {
+        showHelp();
     } else {
-        renderer.addHelpString("Invalid key");
+        renderer.addHelpString("Use 'H' to show help");
     }
 }
 
 void  Game::handleCommand(const std::string &command) {
     if (command == "exit") {
         isRunning = false;
+    } else if (command == "help") {
+        showHelp();
     } else if (command == "L") {
         inputHandler.setRequireEnter(!inputHandler.getRequireEnter());
     } else if (command == "reset") {
@@ -84,22 +117,31 @@ void  Game::handleCommand(const std::string &command) {
         renderer.notify();
     } else if (command == "restart") {
         resetGame();
+        setup();
     } else {
-        renderer.addHelpString("Invalid command");
+        renderer.addHelpString("Enter 'help' for a list of commands");
     }
 }
 
 void Game::setDifficulty(Difficulty difficulty) {
     this->difficulty = difficulty;
     resetGame();
+    setup();
     mazesToComplete = Config::COMPLETED_MAZES_TO_WIN;
 }
 
 void Game::resetGame() {
+    canEnterInput = false;
     completedMazes = 0;
     mazesToComplete = Config::COMPLETED_MAZES_TO_WIN;
     currentMaze = nullptr;
     nextMaze = nullptr;
+    renderer.clearHelpStrings();
+    renderer.setMaze(nullptr);
+    renderer.notify();
+}
+
+void Game::setup() {
     // generate new mazes
     Maze maze(Config::MAZE_WIDTH / 2, Config::MAZE_HEIGHT / 2, difficulty);
     currentMaze = std::make_unique<Maze>(maze);
@@ -109,6 +151,7 @@ void Game::resetGame() {
     renderer.setMaze(std::make_unique<Maze>(*currentMaze));
     Render2dFlags::resetConsole = true;
     renderer.notify();
+    canEnterInput = true;
 }
 
 void Game::movePlayer(Direction direction) {
@@ -150,6 +193,7 @@ void Game::movePlayer(Direction direction) {
                     renderer.notify();
                     // wait for some time
                     std::this_thread::sleep_for(std::chrono::seconds(5));
+                    setup();
                     Render2dFlags::resetConsole = true;
                     renderer.notify();
                     return;

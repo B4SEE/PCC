@@ -17,6 +17,7 @@ int Config::EXPLORE_RADIUS;
 int Config::COMPLETED_MAZES_TO_WIN;
 int Config::MAX_ITEMS_IN_MAZE_SECTION;
 int Config::MIN_ITEMS_IN_MAZE_SECTION;
+
 // Define keybindings
 std::string Config::MOVE_FORWARD;
 std::string Config::MOVE_BACKWARD;
@@ -51,8 +52,10 @@ void Config::resetConst() {
 
 void Config::init(const std::string& configFile) {
     const Config config(configFile);
+
     try
     {
+        // Note: Some lines are for future use
         PLAYER_MOVEMENT_SPEED = config.getFloat("PLAYER_MOVEMENT_SPEED");
         MAZE_WIDTH = config.getInt("MAZE_WIDTH");
         MAZE_HEIGHT = config.getInt("MAZE_HEIGHT");
@@ -91,6 +94,7 @@ void Config::init(const std::string& configFile) {
 
 Config::Config(const std::string& configFile) {
     resetConst();
+    resetKeybindings();
     loadConfigFile(configFile);
 }
 

@@ -1,7 +1,7 @@
 
 /*******************************************************
  *
- * Project: Infinitely generating maze with pseudo 3D ASCII view
+ * Project: Maze game with ASCII view
  * Course: PCC (Programming in C/C++)
  * Semester Project
  *

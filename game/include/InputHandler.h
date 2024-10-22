@@ -83,7 +83,7 @@ private:
     std::function<void(const std::string&)> callback;
 
     std::chrono::steady_clock::time_point lastInputTime;
-    const std::chrono::milliseconds inputCooldown{300};
+    const std::chrono::milliseconds inputCooldown{200};
 
     KeyPressHandler keyPressHandler;
 

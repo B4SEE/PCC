@@ -183,6 +183,7 @@ void Renderer_2d::drawItemCounter() {
 }
 
 void Renderer_2d::showHelp() {
+    // TODO: ensure \n is ignored
     std::cout << helpWindowFirstLine;
     for (int i = 0; i < helpWindowHeight; ++i) {
         if (i < helpStrings.size()) {

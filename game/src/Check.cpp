@@ -5,8 +5,6 @@
 #include <fstream>
 #include <set>
 
-#define watch(x) std::cout << (#x) << " is " << (x) << std::endl
-
 bool Check::checkConst() {
     if (Config::SCREEN_WIDTH < 0 || Config::SCREEN_HEIGHT < 0) {
         return false;
@@ -14,15 +12,22 @@ bool Check::checkConst() {
     if (Config::MAZE_WIDTH <= 1 || Config::MAZE_HEIGHT <= 1) { // maze must be at least 2x2
         return false;
     }
+    if (Config::MIN_ITEMS_IN_MAZE_SECTION < 0 || Config::MAX_ITEMS_IN_MAZE_SECTION <0) {
+        Config::MIN_ITEMS_IN_MAZE_SECTION = 0;
+        Config::MAX_ITEMS_IN_MAZE_SECTION = 0;
+    }
+    if (Config::MIN_ITEMS_IN_MAZE_SECTION > Config::MAX_ITEMS_IN_MAZE_SECTION) {
+        // TODO
+    }
     if (Config::MIN_HELP_WINDOW_HEIGHT < 0) {
         Config::MIN_HELP_WINDOW_HEIGHT = 0;
     }
     if (Config::SCREEN_WIDTH > 120 || Config::SCREEN_HEIGHT > 30) {
         return false;
     }
-    if (Config::MAZE_WIDTH > (Config::SCREEN_WIDTH * 0.75) || Config::MAZE_HEIGHT > (Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT)) {
+    if (Config::MAZE_WIDTH > (Config::SCREEN_WIDTH * 0.75) || Config::MAZE_HEIGHT >= (Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT)) {
         // adjust maze size
-        Config::MAZE_HEIGHT = Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT;
+        Config::MAZE_HEIGHT = Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT - 1;
         // width is always 75% of the console width
         Config::MAZE_WIDTH = Config::SCREEN_WIDTH * 0.75;
     }

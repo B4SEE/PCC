@@ -21,9 +21,10 @@ Maze::~Maze() {}
 
 
 void Maze::generateItems(int itemCount) {
+    // TODO: reimplement function
     for (int i = 0; i < itemCount; i++) {
-        int x = rand() % displayGrid[0].size();
-        int y = rand() % displayGrid.size();
+        int x = rand() % displayGrid.size();
+        int y = rand() % displayGrid[0].size();
         if (displayGrid[x][y] == 0) {
             displayGrid[x][y] = 3;
             itemsPosition.push_back(std::make_pair(x, y));
@@ -74,32 +75,26 @@ void Maze::setPlayerPosition(int x, int y) {
 }
 
 std::pair<int, int> Maze::getPlayerPosition() const {
-    // std::unique_lock<std::mutex> lock(gridMutex);
     return playerPosition;
 }
 
 std::pair<int, int> Maze::getExitPosition() const {
-    // std::unique_lock<std::mutex> lock(gridMutex);
     return exitPosition;
 }
 
 int Maze::getItemsCollected() const {
-    // std::unique_lock<std::mutex> lock(gridMutex);
     return itemsCollected;
 }
 
 int Maze::getTotalItems() const {
-    // std::unique_lock<std::mutex> lock(gridMutex);
     return totalItems;
 }
 
 const std::vector<std::vector<int>>& Maze::getDisplayGrid() const {
-    // std::unique_lock<std::mutex> lock(gridMutex);
     return displayGrid;
 }
 
 const std::vector<std::vector<int>>& Maze::getMaze() const {
-    // std::unique_lock<std::mutex> lock(gridMutex);
     return displayGrid;
 }
 

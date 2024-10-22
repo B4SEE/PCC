@@ -105,6 +105,9 @@ void  Game::handleCommand(const std::string &command) {
     } else if (command.find("difficulty") == 0) {
         // get difficulty from command
         std::string difficultyStr = command.substr(command.find(" ") + 1);
+        if (difficultyStr == "EASY") {
+            setDifficulty(Difficulty::EASY);
+        }
         if (difficultyStr == "MEDIUM") {
             setDifficulty(Difficulty::MEDIUM);
         }
@@ -149,6 +152,7 @@ void Game::setup() {
     this->nextMaze = std::make_unique<Maze>(nextMaze);
 
     renderer.setMaze(std::make_unique<Maze>(*currentMaze));
+
     Render2dFlags::resetConsole = true;
     renderer.notify();
     canEnterInput = true;

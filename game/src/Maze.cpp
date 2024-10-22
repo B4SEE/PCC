@@ -21,15 +21,20 @@ Maze::~Maze() {}
 
 
 void Maze::generateItems(int itemCount) {
-    // TODO: reimplement function
-    for (int i = 0; i < itemCount; i++) {
+    int attempts = 0;
+    int maxAttempts = itemCount * 10; // Arbitrary large number to prevent endless loop
+    int placedItems = 0;
+
+    while (placedItems < itemCount && attempts < maxAttempts) {
         int x = rand() % displayGrid.size();
         int y = rand() % displayGrid[0].size();
         if (displayGrid[x][y] == 0) {
             displayGrid[x][y] = 3;
             itemsPosition.push_back(std::make_pair(x, y));
             totalItems++;
+            placedItems++;
         }
+        attempts++;
     }
 }
 

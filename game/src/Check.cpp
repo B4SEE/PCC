@@ -17,11 +17,14 @@ bool Check::checkConst() {
         Config::MAX_ITEMS_IN_MAZE_SECTION = 0;
     }
     if (Config::MIN_ITEMS_IN_MAZE_SECTION > Config::MAX_ITEMS_IN_MAZE_SECTION) {
-        // TODO
+        int temp = Config::MIN_ITEMS_IN_MAZE_SECTION;
+        Config::MIN_ITEMS_IN_MAZE_SECTION = Config::MAX_ITEMS_IN_MAZE_SECTION;
+        Config::MAX_ITEMS_IN_MAZE_SECTION = temp;
     }
     if (Config::MIN_HELP_WINDOW_HEIGHT < 0) {
         Config::MIN_HELP_WINDOW_HEIGHT = 0;
     }
+    // Might be useless
     if (Config::SCREEN_WIDTH > 120 || Config::SCREEN_HEIGHT > 30) {
         return false;
     }

@@ -28,11 +28,13 @@ bool Check::checkConst() {
     if (Config::SCREEN_WIDTH > 120 || Config::SCREEN_HEIGHT > 30) {
         return false;
     }
-    if (Config::MAZE_WIDTH > (Config::SCREEN_WIDTH * 0.75) || Config::MAZE_HEIGHT >= (Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT)) {
+    if (Config::MAZE_WIDTH > (Config::SCREEN_WIDTH * 0.75)) {
+        // adjust maze size
+        Config::MAZE_WIDTH = Config::SCREEN_WIDTH * 0.75;
+    }
+    if (Config::MAZE_HEIGHT >= (Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT)) {
         // adjust maze size
         Config::MAZE_HEIGHT = Config::SCREEN_HEIGHT - 2 - 1 - 2 - Config::MIN_HELP_WINDOW_HEIGHT - 1;
-        // width is always 75% of the console width
-        Config::MAZE_WIDTH = Config::SCREEN_WIDTH * 0.75;
     }
     return true;
     // other constants check here

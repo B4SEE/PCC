@@ -1,4 +1,6 @@
 #include "InputHandler.h"
+
+#include <Config.h>
 #include <iostream>
 #ifdef _WIN32
 #include <conio.h>
@@ -13,6 +15,11 @@ InputHandler::InputHandler(bool requireEnter, KeyPressHandler handler)
 InputHandler::~InputHandler() {
     stop();
 }
+
+void InputHandler::setInputCooldown(int cooldown) {
+    inputCooldown = std::chrono::milliseconds(cooldown);
+}
+
 
 void InputHandler::setRequireEnter(const bool requireEnter) {
     InputHandler::requireEnter = requireEnter;

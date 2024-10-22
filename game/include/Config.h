@@ -27,6 +27,7 @@ public:
     static int COMPLETED_MAZES_TO_WIN;
     static int MAX_ITEMS_IN_MAZE_SECTION;
     static int MIN_ITEMS_IN_MAZE_SECTION;
+    static int MILLISECONDS_INPUT_DELAY;
 
     // Keybindings
     static std::string MOVE_FORWARD;

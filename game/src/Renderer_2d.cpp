@@ -6,15 +6,9 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #endif
-#include <chrono>
 #include <fstream>
 #include <Config.h>
 #include <Render2dFlags.h>
-
-std::ofstream logRenFile("log2.txt");
-void logRen(const std::string& message) {
-    logRenFile << message << std::endl;
-}
 
 Renderer_2d::Renderer_2d() : running(false), consoleWidth(0), consoleHeight(0), subConsoleWidth(0), subConsoleHeight(0), maze(nullptr) {}
 
@@ -89,7 +83,7 @@ void Renderer_2d::drawMaze() {
             std::cout << "\033[1C";
         }
     } catch (const std::exception& e) {
-        logRen("Error drawing maze: " + std::string(e.what()));
+        std::cerr << "Error drawing maze: " << e.what() << std::endl;
     }
 }
 
@@ -234,6 +228,12 @@ void Renderer_2d::calculateSubConsole() {
     #endif
 
     std::cout << subConsoleStart;
+
+    // check if console is too small
+    if (consoleWidth < Config::SCREEN_WIDTH || consoleHeight < Config::SCREEN_HEIGHT) {
+        std::cerr << "Error: Console is too small" << std::endl;
+        return;
+    }
 
     subConsoleWidth = consoleWidth;
     subConsoleHeight = consoleHeight;

@@ -6,6 +6,7 @@
 #include <chrono>
 #include <string>
 #include <condition_variable>
+#include <Config.h>
 
 /**
  * @class InputHandler
@@ -59,6 +60,8 @@ public:
      */
     bool getRequireEnter() const;
 
+    void setInputCooldown(int cooldown);
+
 private:
     /**
      * @fn run
@@ -83,7 +86,7 @@ private:
     std::function<void(const std::string&)> callback;
 
     std::chrono::steady_clock::time_point lastInputTime;
-    const std::chrono::milliseconds inputCooldown{200};
+    std::chrono::milliseconds inputCooldown{0};
 
     KeyPressHandler keyPressHandler;
 

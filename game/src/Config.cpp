@@ -17,6 +17,7 @@ int Config::EXPLORE_RADIUS;
 int Config::COMPLETED_MAZES_TO_WIN;
 int Config::MAX_ITEMS_IN_MAZE_SECTION;
 int Config::MIN_ITEMS_IN_MAZE_SECTION;
+int Config::MILLISECONDS_INPUT_DELAY;
 
 // Define keybindings
 std::string Config::MOVE_FORWARD;
@@ -48,6 +49,7 @@ void Config::resetConst() {
     COMPLETED_MAZES_TO_WIN = 3;
     MAX_ITEMS_IN_MAZE_SECTION = 10;
     MIN_ITEMS_IN_MAZE_SECTION = 1;
+    MILLISECONDS_INPUT_DELAY = 350;
 }
 
 void Config::init(const std::string& configFile) {
@@ -66,6 +68,7 @@ void Config::init(const std::string& configFile) {
         COMPLETED_MAZES_TO_WIN = config.getInt("COMPLETED_MAZES_TO_WIN");
         MAX_ITEMS_IN_MAZE_SECTION = config.getInt("MAX_ITEMS_IN_MAZE_SECTION");
         MIN_ITEMS_IN_MAZE_SECTION = config.getInt("MIN_ITEMS_IN_MAZE_SECTION");
+        MILLISECONDS_INPUT_DELAY = config.getInt("MILLISECONDS_INPUT_DELAY");
 
         MOVE_FORWARD = config.getString("MOVE_FORWARD");
         MOVE_BACKWARD = config.getString("MOVE_BACKWARD");

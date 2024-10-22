@@ -80,5 +80,4 @@ private:
     int mazesToComplete = 0;
     Difficulty difficulty = Difficulty::EASY;
     std::unique_ptr<Maze> currentMaze;
-    std::unique_ptr<Maze> nextMaze;
 };

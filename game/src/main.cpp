@@ -17,12 +17,12 @@ int main(int argc, char* argv[]) {
                 }
                 logHeader.close();
             } else {
-                std::cerr << "Help file" << std::endl;
+                std::cerr << "Someone deleted the help file!" << std::endl;
             }
             std::exit(0); // Exit after showing help
         }
         if (arg == "--version") {
-            std::cout << "Version 1.0" << std::endl;
+            std::cout << "Version 1.0.0" << std::endl;
             std::exit(0); // Exit after showing version
         }
     }

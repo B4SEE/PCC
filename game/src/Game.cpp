@@ -21,6 +21,7 @@ void Game::start() {
     renderer.notify();
 
     inputHandler.start();
+    inputHandler.setInputCooldown(Config::MILLISECONDS_INPUT_DELAY);
 
     isRunning = true;
     canEnterInput = true;
@@ -100,6 +101,7 @@ void  Game::handleCommand(const std::string &command) {
     } else if (command == "L") {
         inputHandler.setRequireEnter(!inputHandler.getRequireEnter());
     } else if (command == "reset") {
+        renderer.clearHelpStrings();
         Render2dFlags::resetConsole = true;
         renderer.notify();
     } else if (command.find("difficulty") == 0) {
@@ -138,7 +140,6 @@ void Game::resetGame() {
     completedMazes = 0;
     mazesToComplete = Config::COMPLETED_MAZES_TO_WIN;
     currentMaze = nullptr;
-    nextMaze = nullptr;
     renderer.clearHelpStrings();
     renderer.setMaze(nullptr);
     renderer.notify();
@@ -148,8 +149,6 @@ void Game::setup() {
     // generate new mazes
     Maze maze(Config::MAZE_WIDTH / 2, Config::MAZE_HEIGHT / 2, difficulty);
     currentMaze = std::make_unique<Maze>(maze);
-    Maze nextMaze = Maze(Config::MAZE_WIDTH / 2, Config::MAZE_HEIGHT / 2, difficulty);
-    this->nextMaze = std::make_unique<Maze>(nextMaze);
 
     renderer.setMaze(std::make_unique<Maze>(*currentMaze));
 
@@ -182,15 +181,15 @@ void Game::movePlayer(Direction direction) {
 
         currentMaze->setPlayerPosition(newX, newY);
 
-        // check if position changed
+        // Check if position changed
         if (playerPosition != currentMaze->getPlayerPosition()) {
-            // check if player reached the exit
+            // Check if player reached the exit
             if (currentMaze->getPlayerPosition() == currentMaze->getExitPosition()) {
                 completedMazes++;
                 if (completedMazes < mazesToComplete) {
-                    currentMaze = std::move(nextMaze);
-                    Maze newMaze = Maze(Config::MAZE_WIDTH / 2, Config::MAZE_HEIGHT / 2, difficulty);
-                    nextMaze = std::make_unique<Maze>(newMaze);
+                    this->currentMaze = std::make_unique<Maze>(Config::MAZE_WIDTH / 2, Config::MAZE_HEIGHT / 2, difficulty);
+                    Render2dFlags::drawMaze = true;
+                    renderer.notify();
                 } else {
                     resetGame();
                     Render2dFlags::printWinMessage = true;

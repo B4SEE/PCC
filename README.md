@@ -10,59 +10,58 @@ nlohmann/json - [https://github.com/nlohmann/json](https://github.com/nlohmann/j
 ## Game Controls
 
 - **Movement**: Use `W`, `A`, `S`, `D` keys to move the player.
+- **Help**: Press `H` to toggle help window.
 - **Toggle Command Line Mode**: Press `L` to toggle command line mode.
-- **Exit Game**: Type `exit` to quit the game.
-- **Reset Console**: Type `reset` to reset the console if it is 'accidentally' broken or resized.
-- **Show Help**: Type `help` to display the help message.
-- **Change Difficulty**: Type `difficulty EASY`, `difficulty MEDIUM`, or `difficulty HARD` to change the difficulty level.
-- **Show Maze**: Type `show` to display the entire maze.
-- **Restart Game**: Type `restart` to restart the game.
+
+Available commands in command line mode:
+
+| Command             | Description                         |
+|---------------------|-------------------------------------|
+| `exit`              | Exit the game                       |
+| `reset`             | Reset the console                   |
+| `help`              | Show help message                   |
+| `show`              | Show the entire maze                |
+| `restart`           | Restart the game                    |
+| `difficulty EASY`   | Change difficulty to EASY (default) |
+| `difficulty MEDIUM` | Change difficulty to MEDIUM         |
+| `difficulty HARD`   | Change difficulty to HARD           |
+
 
 ## Game Settings
 
 The game can be configured using the `config.json` file. Below are the available settings:
 
-- **MAZE\_WIDTH**: Width of the maze.
-- **MAZE\_HEIGHT**: Height of the maze.
-- **SCREEN\_WIDTH**: Width of the game screen.
-- **SCREEN\_HEIGHT**: Height of the game screen.
-- **MIN\_HELP\_WINDOW\_HEIGHT**: Minimum height of the help window.
-- **EXPLORE\_RADIUS**: Radius of exploration around the player e.g. visible area.
-- **COMPLETED\_MAZES\_TO\_WIN**: Number of mazes to complete to win the game.
-- **MAX\_ITEMS\_IN\_MAZE\_SECTION**: Maximum number of items in a maze section.
-- **MIN\_ITEMS\_IN\_MAZE\_SECTION**: Minimum number of items in a maze section.
-- **MILLISECONDS\_INPUT\_DELAY**: Delay in milliseconds for input processing.
-
-Please use adequate values for the settings to avoid breaking the game. Default values are:
-    
-    ```json
-    {
-        "MAZE_WIDTH": 90,
-        "MAZE_HEIGHT": 20,
-        "SCREEN_WIDTH": 120,
-        "SCREEN_HEIGHT": 30,
-        "MIN_HELP_WINDOW_HEIGHT": 5,
-        "EXPLORE_RADIUS": 5,
-        "COMPLETED_MAZES_TO_WIN": 3,
-        "MAX_ITEMS_IN_MAZE_SECTION": 15,
-        "MIN_ITEMS_IN_MAZE_SECTION": 5,
-        "MILLISECONDS_INPUT_DELAY": 300
-    }
-    ```
-
-Note:
-- The `config.json` is located in the `../resources` directory. There are other settings that are not used yet. Key 'L' and 'H' are reserved.
-- Actual maze width and height can differ from the specified values in the `config.json` file due to the generation algorithm.
-- If game encounters invalid maze width or height, it will set the values to the closest valid values.
+| Setting Name               | Description                                | Default Value |
+|----------------------------|--------------------------------------------|---------------|
+| `PLAYER_MOVEMENT_SPEED`    | Speed of player movement                   | 5.0           |
+| `MAZE_WIDTH`               | Width of the maze                          | 90            |
+| `MAZE_HEIGHT`              | Height of the maze                         | 20            |
+| `SCREEN_WIDTH`             | Width of the game screen                   | 120           |
+| `SCREEN_HEIGHT`            | Height of the game screen                  | 30            |
+| `MIN_HELP_WINDOW_HEIGHT`   | Minimum height of the help window          | 5             |
+| `EXPLORE_RADIUS`           | Radius of exploration around the player    | 5             |
+| `COMPLETED_MAZES_TO_WIN`   | Number of mazes to complete to win the game| 3             |
+| `MAX_ITEMS_IN_MAZE_SECTION`| Maximum number of items in a maze section  | 15            |
+| `MIN_ITEMS_IN_MAZE_SECTION`| Minimum number of items in a maze section  | 5             |
+| `MILLISECONDS_INPUT_DELAY` | Delay in milliseconds for input processing | 300           |
 
 ### Key Bindings
 
 Default key bindings can be set to alphanumeric characters (0-9a-zA-Z, excluding special characters) only:
 
-- **MOVE\_FORWARD**: `W`
-- **MOVE\_BACKWARD**: `S`
-- **MOVE\_LEFT**: `A`
-- **MOVE\_RIGHT**: `D`
+| Action          | Default Key |
+|-----------------|--------------|
+| `MOVE_FORWARD`  | `W`          |
+| `MOVE_BACKWARD` | `S`          |
+| `MOVE_LEFT`     | `A`          |
+| `MOVE_RIGHT`    | `D`          |
+
+Please use adequate values for the settings to avoid breaking the game.
+
+Note:
+- The `config.json` is located in the `../resources` directory. There are other settings that are not used yet. Key 'L' and 'H' are reserved.
+- Actual maze width and height can differ from the specified values in the `config.json` file due to the generation algorithm.
+- If game encounters invalid maze width or height, it will set the values to the closest valid values.
 
 ## Installation Instructions
 

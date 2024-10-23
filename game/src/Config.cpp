@@ -52,6 +52,12 @@ void Config::resetConst() {
     MILLISECONDS_INPUT_DELAY = 350;
 }
 
+void Config::initDefault() {
+    resetConst();
+    resetKeybindings();
+}
+
+
 void Config::init(const std::string& configFile) {
     const Config config(configFile);
 

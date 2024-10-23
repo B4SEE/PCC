@@ -25,8 +25,13 @@ void Game::start() {
 
     isRunning = true;
     canEnterInput = true;
+
+    run();
+}
+
+void Game::run() {
     while (isRunning) {
-        // Game loop logic
+        // Nothing happens here
     }
 }
 

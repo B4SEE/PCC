@@ -101,6 +101,9 @@ public:
      */
     const std::vector<std::vector<int>>& getDisplayGrid() const;
 
+    int getWidth() const { return displayGrid.size(); }
+    int getHeight() const { return displayGrid[0].size(); }
+
 private:
     /**
      * @fn void Maze::generateItems(int itemCount)
@@ -151,5 +154,5 @@ private:
     int totalItems = 0;
     
     std::pair<int, int> playerPosition = std::make_pair(1, 1);
-    std::pair<int, int> exitPosition;
+    std::pair<int, int> exitPosition = std::make_pair(0, 0);
 };

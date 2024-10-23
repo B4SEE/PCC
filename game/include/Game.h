@@ -39,6 +39,12 @@ public:
     void start();
 
     /**
+     * @fn run
+     * @brief Main game loop.
+     */
+    void run();
+
+    /**
      * @fn stop
      * @brief Stops the game.
      */

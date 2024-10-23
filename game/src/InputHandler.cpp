@@ -16,6 +16,10 @@ InputHandler::~InputHandler() {
     stop();
 }
 
+std::function<void(const std::string &)> InputHandler::getCallback() {
+    return callback;
+}
+
 void InputHandler::setInputCooldown(int cooldown) {
     inputCooldown = std::chrono::milliseconds(cooldown);
 }

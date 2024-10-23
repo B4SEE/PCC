@@ -60,7 +60,23 @@ public:
      */
     bool getRequireEnter() const;
 
+    /**
+     * @fn setInputCooldown
+     * @brief Sets the cooldown between inputs.
+     * @param cooldown The cooldown between inputs.
+     */
     void setInputCooldown(int cooldown);
+
+    /**
+        * @fn handleKeyPress
+        * @brief Handles a key press.
+        * @param key The key that was pressed.
+        */
+    void handleKeyPress(char key);
+
+    std::function<void(const std::string&)> getCallback();
+
+    bool getIsRunning() const { return running; }
 
 private:
     /**
@@ -68,13 +84,6 @@ private:
      * @brief Starts the input handler thread.
      */
     void run();
-
-    /**
-     * @fn handleKeyPress
-     * @brief Handles a key press.
-     * @param key The key that was pressed.
-     */
-    void handleKeyPress(char key);
 
     std::mutex inputMutex;
 

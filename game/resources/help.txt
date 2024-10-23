@@ -1,6 +1,7 @@
 Game Help Information:
 =======================
 Version: 1.0.0
+Libraries used: nlohmann/json v3.11.3
 
 Usage:
   ./PCCGame [options]

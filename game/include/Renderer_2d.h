@@ -38,9 +38,64 @@ public:
     void stop();
 
     /**
-     * @fn Renderer_2d::redrawPlayer
-     * @brief Redraws only specific area around the player.
+     * @fn setMaze
+     * @brief Sets the maze to be rendered.
+     * @param maze The maze to be rendered.
      */
+    void setMaze(std::unique_ptr<Maze> maze);
+
+    /**
+     * @fn addHelpString
+     * @brief Adds a help string to be displayed on the screen.
+     * @param helpString The help string to be displayed.
+     */
+    void addHelpString(const std::string& helpString);
+
+    /**
+     * @fn clearHelpStrings
+     * @brief Clears all help strings from the screen.
+     */
+    void clearHelpStrings();
+
+    /**
+     * @fn notify
+     * @brief Notifies the renderer to render the screen.
+     */
+    void notify();
+
+    // Getters
+    bool getIsRunning() const { return running; }
+    int getConsoleWidth() const { return consoleWidth; }
+    int getConsoleHeight() const { return consoleHeight; }
+    int getSubConsoleWidth() const { return subConsoleWidth; }
+    int getSubConsoleHeight() const { return subConsoleHeight; }
+    int getMazeWindowWidth() const { return mazeWindowWidth; }
+    int getMazeWindowHeight() const { return mazeWindowHeight; }
+    int getHelpWindowHeight() const { return helpWindowHeight; }
+    int getMaxHelpLineLength() const { return maxHelpLineLength; }
+    std::vector<std::string> getHelpStrings() const { return helpStrings; }
+
+private:
+    /**
+        * @fn clearInputLine
+        * @brief Clears the input line on the screen.
+        */
+    void clearInputLine();
+    /**
+        * @fn drawHelp
+        * @brief Draws help strings on the screen.
+        */
+    void showHelp();
+
+    /**
+     * @fn drawSubConsole
+     * @brief Draws the sub-console on the screen.
+     */
+    void drawSubConsole();
+    /**
+        * @fn Renderer_2d::redrawPlayer
+        * @brief Redraws only specific area around the player.
+        */
     void redrawPlayer();
 
     /**
@@ -72,52 +127,6 @@ public:
      * @brief Draws the input line on the screen.
      */
     void drawInputLine();
-
-    /**
-     * @fn clearInputLine
-     * @brief Clears the input line on the screen.
-     */
-    void clearInputLine();
-
-    /**
-     * @fn drawHelp
-     * @brief Draws help strings on the screen.
-     */
-    void showHelp();
-
-    /**
-     * @fn drawSubConsole
-     * @brief Draws the sub-console on the screen.
-     */
-    void drawSubConsole();
-
-    /**
-     * @fn setMaze
-     * @brief Sets the maze to be rendered.
-     * @param maze The maze to be rendered.
-     */
-    void setMaze(std::unique_ptr<Maze> maze);
-
-    /**
-     * @fn addHelpString
-     * @brief Adds a help string to be displayed on the screen.
-     * @param helpString The help string to be displayed.
-     */
-    void addHelpString(const std::string& helpString);
-
-    /**
-     * @fn clearHelpStrings
-     * @brief Clears all help strings from the screen.
-     */
-    void clearHelpStrings();
-
-    /**
-     * @fn notify
-     * @brief Notifies the renderer to render the screen.
-     */
-    void notify();
-
-private:
     /**
      * @fn drawSeparator
      * @brief Draws a separator on the screen.
@@ -164,15 +173,15 @@ private:
     std::condition_variable renderCondition;
 
     // Console dimensions
-    int consoleWidth;
-    int consoleHeight;
-    int subConsoleWidth;
-    int subConsoleHeight;
+    int consoleWidth = 0;
+    int consoleHeight = 0;
+    int subConsoleWidth = 0;
+    int subConsoleHeight = 0;
 
-    int mazeWindowWidth;
-    int mazeWindowHeight;
+    int mazeWindowWidth = 0;
+    int mazeWindowHeight = 0;
 
-    int helpWindowHeight;
+    int helpWindowHeight = 0;
 
     int maxHelpLineLength = 0;
 

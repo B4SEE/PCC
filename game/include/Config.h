@@ -43,7 +43,13 @@ public:
      * @brief Initializes the configuration settings from the specified file.
      * @param configFile The path to the configuration file.
      */
-    static void init(const std::string& configFile);    
+    static void init(const std::string& configFile);
+
+    /**
+     * @fn initDefault
+     * @brief Initializes the configuration settings with default values.
+     */
+    static void initDefault();
 
 private:
     /**

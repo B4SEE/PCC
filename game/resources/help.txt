@@ -1,0 +1,85 @@
+Game Help Information:
+=======================
+Version: 1.0.0
+Libraries used: nlohmann/json v3.11.3
+
+Usage:
+  ./PCCGame [options]
+
+Run without any options to start the game.
+
+Options:
+  --help       Show this help message and exit
+  --version    Show game version and exit
+
+Controls:
+  Use WASD to move the player
+  L to toggle command line mode
+  Type 'exit' to quit the game
+  Type 'reset' to reset the console if you 'accidentally' break it or resize it
+
+Commands:
+  help         Show this help message
+  exit         Quit the game
+  reset        Reset/resize the console
+  difficulty   Change the difficulty level (EASY, MEDIUM, HARD)
+  show         Show the entire maze
+  restart      Restart the game
+
+Game Objective:
+  Collect all items in the maze to open the door and exit.
+  Complete a specific number of mazes to win the game.
+
+Difficulty Levels:
+  EASY         Less complex mazes with fewer items
+  MEDIUM       Moderately complex mazes with a moderate number of items
+  HARD         Highly complex mazes with more items
+
+Project Information:
+  Project: Maze game with ASCII view
+  Course: PCC (Programming in C/C++)
+  Semester Project
+  Author: B4SEE
+
+Used Libraries:
+    - nlohmann
+    - spdlog
+
+GitHub Repository: https://github.com/B4SEE/PCC/tree/main
+
+===========================================================
+
+Why are you still reading this?
+
+===========================================================
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+===========================================================
+
+Please do not break the console. It is fragile.
+
+===========================================================
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+===========================================================
+
+Seriously, do not try to break the console. >:|
+
+===========================================================
+

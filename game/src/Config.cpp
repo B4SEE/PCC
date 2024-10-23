@@ -1,11 +1,8 @@
 #include "Config.h"
 #include <fstream>
 #include <sstream>
-#include <iostream>
-#include <stdexcept>
 #include <nlohmann/json.h>
 #include "Check.h"
-#include "logging/Log_func.h"
 
 using json = nlohmann::json;
 
@@ -15,10 +12,13 @@ int Config::MAZE_WIDTH;
 int Config::MAZE_HEIGHT;
 int Config::SCREEN_WIDTH;
 int Config::SCREEN_HEIGHT;
+int Config::MIN_HELP_WINDOW_HEIGHT;
 int Config::EXPLORE_RADIUS;
 int Config::COMPLETED_MAZES_TO_WIN;
 int Config::MAX_ITEMS_IN_MAZE_SECTION;
 int Config::MIN_ITEMS_IN_MAZE_SECTION;
+int Config::MILLISECONDS_INPUT_DELAY;
+
 // Define keybindings
 std::string Config::MOVE_FORWARD;
 std::string Config::MOVE_BACKWARD;
@@ -42,28 +42,39 @@ void Config::resetConst() {
     PLAYER_MOVEMENT_SPEED = 5.0f;
     MAZE_WIDTH = 10;
     MAZE_HEIGHT = 10;
-    SCREEN_WIDTH = 800;
-    SCREEN_HEIGHT = 600;
+    SCREEN_WIDTH = 120;
+    SCREEN_HEIGHT = 30;
+    MIN_HELP_WINDOW_HEIGHT = 5;
     EXPLORE_RADIUS = 5;
     COMPLETED_MAZES_TO_WIN = 3;
     MAX_ITEMS_IN_MAZE_SECTION = 10;
     MIN_ITEMS_IN_MAZE_SECTION = 1;
+    MILLISECONDS_INPUT_DELAY = 350;
 }
 
+void Config::initDefault() {
+    resetConst();
+    resetKeybindings();
+}
+
+
 void Config::init(const std::string& configFile) {
-    LOG(INFO) << "Loading configuration file: " << configFile;
     const Config config(configFile);
+
     try
     {
+        // Note: Some lines are for future use
         PLAYER_MOVEMENT_SPEED = config.getFloat("PLAYER_MOVEMENT_SPEED");
         MAZE_WIDTH = config.getInt("MAZE_WIDTH");
         MAZE_HEIGHT = config.getInt("MAZE_HEIGHT");
         SCREEN_WIDTH = config.getInt("SCREEN_WIDTH");
         SCREEN_HEIGHT = config.getInt("SCREEN_HEIGHT");
+        MIN_HELP_WINDOW_HEIGHT = config.getInt("MIN_HELP_WINDOW_HEIGHT");
         EXPLORE_RADIUS = config.getInt("EXPLORE_RADIUS");
         COMPLETED_MAZES_TO_WIN = config.getInt("COMPLETED_MAZES_TO_WIN");
         MAX_ITEMS_IN_MAZE_SECTION = config.getInt("MAX_ITEMS_IN_MAZE_SECTION");
         MIN_ITEMS_IN_MAZE_SECTION = config.getInt("MIN_ITEMS_IN_MAZE_SECTION");
+        MILLISECONDS_INPUT_DELAY = config.getInt("MILLISECONDS_INPUT_DELAY");
 
         MOVE_FORWARD = config.getString("MOVE_FORWARD");
         MOVE_BACKWARD = config.getString("MOVE_BACKWARD");
@@ -73,40 +84,33 @@ void Config::init(const std::string& configFile) {
         TURN_RIGHT = config.getString("TURN_RIGHT");
         OPEN_MAP = config.getString("OPEN_MAP");
 
-        if (MAZE_WIDTH > SCREEN_WIDTH || MAZE_HEIGHT > SCREEN_HEIGHT)
+        if (!Check::checkConst())
         {
             resetConst();
-            LOG(WARNING) << "Maze dimensions exceed screen dimensions, resetting to default values";
         }
-
-        LOG(DEBUG) << "Game constants loaded\n";
 
         if (!Check::checkKeybindings())
         {
             resetKeybindings();
-            LOG(WARNING) << "Invalid keybindings, default values loaded";
         }
-
-        LOG(INFO) << "Configuration file loaded";
     }
     catch (const std::exception& e)
     {
         resetConst();
         resetKeybindings();
-        LOG(ERROR) << "Failed to load configuration file " << configFile << ": " << e.what();
-        LOG(INFO) << "Failed, default configuration loaded";
     }
 }
 
 Config::Config(const std::string& configFile) {
     resetConst();
+    resetKeybindings();
     loadConfigFile(configFile);
 }
 
 void Config::loadConfigFile(const std::string& configFile) {
     std::ifstream file(configFile);
     if (!file.is_open()) {
-        throw std::runtime_error("Failed to open config file: " + configFile);
+        return;
     }
 
     json root;
@@ -117,8 +121,6 @@ void Config::loadConfigFile(const std::string& configFile) {
             m_configData[key] = value.get<std::string>();
         } else if (value.is_number()) {
             m_configData[key] = std::to_string(value.get<double>());
-        } else {
-            throw std::runtime_error("Unsupported data type in config file for key: " + key);
         }
     }
 }  

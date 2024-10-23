@@ -91,8 +91,8 @@ To run the game, execute the following command:
 ./PCCGame [options]
 
 Options:
-  -h, --help      Show help message
-  -v, --version   Show version information
+  --help      Show help message
+  --version   Show version information
 ```
 
 ## Known Issues

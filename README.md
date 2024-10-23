@@ -4,8 +4,12 @@
 
 This project is a semester assignment for the PCC (Programming in C/C++) winter course 2024/2025. The game features an 'infinitely' generating maze with an ASCII view. The objective of the game is to collect all items in the maze to open the door and exit. Players must complete a specific number of mazes to win the game.
 
+---
+
 ## Libraries Used
 nlohmann/json - [https://github.com/nlohmann/json](https://github.com/nlohmann/json)
+
+---
 
 ## Game Controls
 
@@ -25,7 +29,9 @@ Available commands in command line mode:
 | `difficulty EASY`   | Change difficulty to EASY (default) |
 | `difficulty MEDIUM` | Change difficulty to MEDIUM         |
 | `difficulty HARD`   | Change difficulty to HARD           |
+| `L`                 | Exit command line mode              |
 
+---
 
 ## Game Settings
 
@@ -59,9 +65,12 @@ Default key bindings can be set to alphanumeric characters (0-9a-zA-Z, excluding
 Please use adequate values for the settings to avoid breaking the game.
 
 Note:
+- Use uppercase letters for key bindings. Otherwise, the game will not recognize the key.
 - The `config.json` is located in the `../resources` directory. There are other settings that are not used yet. Key 'L' and 'H' are reserved.
 - Actual maze width and height can differ from the specified values in the `config.json` file due to the generation algorithm.
 - If game encounters invalid maze width or height, it will set the values to the closest valid values.
+
+---
 
 ## Installation Instructions
 
@@ -82,6 +91,7 @@ To set up the development environment, follow these steps:
     make
     ```
 
+---
 
 ## How to Run
 
@@ -94,6 +104,8 @@ Options:
   --help      Show help message
   --version   Show version information
 ```
+
+---
 
 ## Known Issues
 

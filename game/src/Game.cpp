@@ -105,7 +105,6 @@ void  Game::handleCommand(const std::string &command) {
         Render2dFlags::resetConsole = true;
         renderer.notify();
     } else if (command.find("difficulty") == 0) {
-        // get difficulty from command
         std::string difficultyStr = command.substr(command.find(" ") + 1);
         if (difficultyStr == "EASY") {
             setDifficulty(Difficulty::EASY);
@@ -117,7 +116,7 @@ void  Game::handleCommand(const std::string &command) {
             setDifficulty(Difficulty::HARD);
         }
     } else if (command == "show") {
-        Render2dFlags::showAllMaze = true;
+        Render2dFlags::showAllMaze = !Render2dFlags::showAllMaze;
         Render2dFlags::redrawPlayer = true;
         renderer.notify();
     } else if (command == "restart") {
@@ -194,7 +193,7 @@ void Game::movePlayer(Direction direction) {
                     resetGame();
                     Render2dFlags::printWinMessage = true;
                     renderer.notify();
-                    // wait for some time
+                    // Wait for some time
                     std::this_thread::sleep_for(std::chrono::seconds(5));
                     setup();
                     Render2dFlags::resetConsole = true;

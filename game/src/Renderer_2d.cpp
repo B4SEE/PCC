@@ -172,8 +172,14 @@ void Renderer_2d::drawItemCounter() {
         itemsCollected = maze->getItemsCollected();
         totalItems = maze->getTotalItems();
     }
-    std::cout << itemCounterStart << "I: " << itemsCollected;
-    std::cout << itemCounterStart << "\033[1B" << "T: " << totalItems;
+
+    // Clear previous item counter
+    std::cout << itemCounterStart;
+    for (int i = 0; i < subConsoleWidth - 2 - mazeWindowWidth - 5; ++i) {
+        std::cout << " ";
+    }
+
+    std::cout << itemCounterStart << "I: " << itemsCollected << "/" << totalItems;
 }
 
 void Renderer_2d::showHelp() {

@@ -231,24 +231,31 @@ void Renderer_2d::showHelp() {
         maxHelpStringLength = std::max(maxHelpStringLength, static_cast<int>(helpString.size()));
     }
 
+    if (maxHelpStringLength >= maxHelpLineLength) { // If not print string first
+        maxHelpLineLength = maxHelpStringLength;
+    }
+
     std::cout << helpWindowFirstLine;
     for (int i = 0; i < helpWindowHeight; ++i) {
+        // Clear line first
+        for (int j = 0; j < maxHelpLineLength; ++j) {
+            std::cout << " ";
+        }
+        std::cout << "\033[2G";
+
         if (i < helpStrings.size()) {
-            for (int j = 0; j < maxHelpStringLength * 2; ++j) {
+            for (int j = 0; j < maxHelpLineLength; ++j) {
                 if (j < helpStrings[i].size()) {
                     std::cout << "\033[36m" << helpStrings[i][j] << "\033[0m";
-                } else {
-                    std::cout << " ";
                 }
             }
-        } else {
-            for (int j = 0; j < maxHelpStringLength; ++j) {
-                std::cout << " ";
-            }
         }
+
         std::cout << std::endl;
         std::cout << "\033[1C";
     }
+
+    maxHelpLineLength = maxHelpStringLength; // update maxHelpLineLength
 }
 
 void Renderer_2d::setMaze(std::unique_ptr<Maze> newMaze) {

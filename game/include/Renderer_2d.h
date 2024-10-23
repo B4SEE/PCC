@@ -174,6 +174,8 @@ private:
 
     int helpWindowHeight;
 
+    int maxHelpLineLength = 0;
+
     // Cursor positions (ANSI escape sequences)
     std::string subConsoleStart;
     std::string subConsoleEnd;

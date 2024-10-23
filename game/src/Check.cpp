@@ -69,6 +69,10 @@ bool Check::checkKeybindings() {
         if (!uniqueKeybinds.insert(keybind).second) {
             break;
         }
+        // keybinds cannot use H or L
+        if (keybind[0] == 'h' || keybind[0] == 'l') {
+            break;
+        }
 
         return true;
     }

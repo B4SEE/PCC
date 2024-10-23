@@ -81,17 +81,19 @@ void Game::showHelp() {
 
 
 void Game::handleKey(const std::string& key) {
-    if (key == "w") {
+    // make key uppercase
+    std::string keyUpper = key;
+    if (keyUpper == Config::MOVE_FORWARD) {
         movePlayer(Direction::UP);
-    } else if (key == "s") {
+    } else if (keyUpper == Config::MOVE_BACKWARD) {
         movePlayer(Direction::DOWN);
-    } else if (key == "a") {
+    } else if (keyUpper == Config::MOVE_LEFT) {
         movePlayer(Direction::LEFT);
-    } else if (key == "d") {
+    } else if (keyUpper == Config::MOVE_RIGHT) {
         movePlayer(Direction::RIGHT);
-    } else if (key == "L") {
+    } else if (keyUpper == "L") {
         inputHandler.setRequireEnter(!inputHandler.getRequireEnter());
-    } else if (key == "H") {
+    } else if (keyUpper == "H") {
         showHelp();
     } else {
         renderer.addHelpString("Use 'H' to show help");
@@ -120,6 +122,8 @@ void  Game::handleCommand(const std::string &command) {
         if (difficultyStr == "HARD") {
             setDifficulty(Difficulty::HARD);
         }
+        resetGame();
+        setup();
     } else if (command == "show") {
         Render2dFlags::showAllMaze = !Render2dFlags::showAllMaze;
         Render2dFlags::drawMaze = true;

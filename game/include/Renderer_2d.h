@@ -38,6 +38,12 @@ public:
     void stop();
 
     /**
+     * @fn Renderer_2d::redrawPlayer
+     * @brief Redraws only specific area around the player.
+     */
+    void redrawPlayer();
+
+    /**
      * @fn Renderer_2d::drawAllMaze
      * @brief Draws the entire maze.
      */

@@ -117,7 +117,7 @@ void  Game::handleCommand(const std::string &command) {
         }
     } else if (command == "show") {
         Render2dFlags::showAllMaze = !Render2dFlags::showAllMaze;
-        Render2dFlags::redrawPlayer = true;
+        Render2dFlags::drawMaze = true;
         renderer.notify();
     } else if (command == "restart") {
         resetGame();

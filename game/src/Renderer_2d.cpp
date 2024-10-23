@@ -37,6 +37,29 @@ void Renderer_2d::stop() {
     }
 }
 
+void switchThroughDisplayGrid(int num) {
+    switch (num) {
+        case 0:
+            std::cout << " ";
+            break;
+        case 1:
+            std::cout << "#";
+            break;
+        case 2:
+            std::cout << "\033[1;31mo\033[0m";
+            break;
+        case 3:
+            std::cout << "\033[1;32m*\033[0m";
+            break;
+        case 4:
+            std::cout << "\033[1;34mX\033[0m";
+            break;
+        default:
+            std::cout << "?";
+            break;
+    }
+}
+
 void Renderer_2d::drawMaze() {
     if (maze == nullptr) {
         return;
@@ -51,30 +74,15 @@ void Renderer_2d::drawMaze() {
 
     auto displayGrid = maze->getDisplayGrid();
 
+    if (displayGrid.empty() || displayGrid[0].empty()) {
+        return;
+    }
+
     try {
         for (size_t x = 0; x < displayGrid.size(); ++x) {
             for (size_t y = 0; y < displayGrid[0].size(); ++y) {
                 if (std::abs(playerX - static_cast<int>(x)) <= exploreRadius && std::abs(playerY - static_cast<int>(y)) <= exploreRadius) {
-                    switch (displayGrid.at(x).at(y)) {
-                        case 0:
-                            std::cout << " ";
-                            break;
-                        case 1:
-                            std::cout << "#";
-                            break;
-                        case 2:
-                            std::cout << "\033[1;31mo\033[0m";
-                            break;
-                        case 3:
-                            std::cout << "\033[1;32m*\033[0m";
-                            break;
-                        case 4:
-                            std::cout << "\033[1;34mX\033[0m";
-                            break;
-                        default:
-                            std::cout << "?";
-                            break;
-                    }
+                    switchThroughDisplayGrid(displayGrid[x][y]);
                 } else {
                     std::cout << "X";
                 }
@@ -120,46 +128,74 @@ void Renderer_2d::drawAllMaze() {
         return;
     }
 
-    for (const auto& row : displayGrid) {
-        for (int cell : row) {
-            switch (cell) {
-                case 0:
-                    std::cout << " ";
-                    break;
-                case 1:
-                    std::cout << "#";
-                    break;
-                case 2:
-                    std::cout << "\033[1;31mo\033[0m";
-                    break;
-                case 3:
-                    std::cout << "\033[1;32m*\033[0m";
-                    break;
-                case 4:
-                    std::cout << "\033[1;34mX\033[0m";
-                    break;
-                default:
-                    std::cout << "?";
-                    break;
+    try {
+        for (size_t x = 0; x < displayGrid.size(); ++x) {
+            for (size_t y = 0; y < displayGrid[0].size(); ++y) {
+                switchThroughDisplayGrid(displayGrid[x][y]);
+            }
+            std::cout << std::endl;
+            std::cout << "\033[1C";
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error drawing maze: " << e.what() << std::endl;
+    }
+}
+
+void Renderer_2d::redrawPlayer() {
+    int radius = Config::EXPLORE_RADIUS + 1;
+    if (maze == nullptr) {
+        return;
+    }
+    if (Render2dFlags::showAllMaze) {
+        radius = 1;
+    }
+
+    auto displayGrid = maze->getDisplayGrid();
+    auto playerPosition = maze->getPlayerPosition();
+    int playerX = playerPosition.first;
+    int playerY = playerPosition.second;
+
+    // Calculate rectangle to redraw
+    int startX = playerX - radius;
+    int startY = playerY - radius;
+    int endX = playerX + radius;
+    int endY = playerY + radius;
+
+    // Go through displayGrid and redraw the rectangle
+    for (int x = startX; x <= endX; ++x) {
+        for (int y = startY; y <= endY; ++y) {
+            if (x < 0 || y < 0 || x >= static_cast<int>(displayGrid.size()) || y >= static_cast<int>(displayGrid[0].size())) {
+                continue;
+            }
+
+            std::cout << "\033[" << x + 1 + 1 << ";" << y + 1 + 1<< "H";
+            if (!Render2dFlags::showAllMaze && (std::abs(playerX - x) >= radius || std::abs(playerY - y) >= radius)) {
+                std::cout << "X";
+            } else {
+                switchThroughDisplayGrid(displayGrid[x][y]);
             }
         }
-        std::cout << std::endl;
-        std::cout << "\033[1C";
     }
 }
 
 void Renderer_2d::drawInputLine() {
     std::cout << inputLineStart;
     for (int i = 0; i < subConsoleWidth - 2; ++i) {
-        std::cout << "#";
+        std::cout << " ";
     }
     std::cout << std::endl;
     std::cout << "\033[1C";
 }
 
 void Renderer_2d::clearInputLine() {
+    if (helpStrings.empty()) {
+        return;
+    }
+
+    std::string lastHelpString = helpStrings.back();
+
     std::cout << inputLineStart;
-    for (int i = 0; i < subConsoleWidth - 2; ++i) {
+    for (size_t i = 0; i < lastHelpString.size(); ++i) {
         std::cout << " ";
     }
     std::cout << inputLineStart;
@@ -175,7 +211,12 @@ void Renderer_2d::drawItemCounter() {
 
     // Clear previous item counter
     std::cout << itemCounterStart;
-    for (int i = 0; i < subConsoleWidth - 2 - mazeWindowWidth - 5; ++i) {
+    // Get max width of item counter
+    // turn Config::MAX_ITEMS into a string
+    std::string maxItemsStr = std::to_string(Config::MAX_ITEMS_IN_MAZE_SECTION);
+    std::string itemCounterStr = "I: ";
+    int maxItemsStrLength = maxItemsStr.size() * 2 + 1 + itemCounterStr.size(); // 1 for the slash
+    for (int i = 0; i < maxItemsStrLength; ++i) {
         std::cout << " ";
     }
 
@@ -183,24 +224,30 @@ void Renderer_2d::drawItemCounter() {
 }
 
 void Renderer_2d::showHelp() {
-    // TODO: ensure \n is ignored
+
+    //TODO: fix
+    int maxHelpStringLength = 0;
+    for (const auto& helpString : helpStrings) {
+        maxHelpStringLength = std::max(maxHelpStringLength, static_cast<int>(helpString.size()));
+    }
+
     std::cout << helpWindowFirstLine;
     for (int i = 0; i < helpWindowHeight; ++i) {
         if (i < helpStrings.size()) {
-            for (int j = 0; j < subConsoleWidth - 2; ++j) {
+            for (int j = 0; j < maxHelpStringLength * 2; ++j) {
                 if (j < helpStrings[i].size()) {
-                    if (helpStrings[i][j] == '\n') {
-                        std::cout << " ";
-                    } else {
-                        std::cout << "\033[36m" << helpStrings[i][j] << "\033[0m";
-                    }
+                    std::cout << "\033[36m" << helpStrings[i][j] << "\033[0m";
                 } else {
                     std::cout << " ";
                 }
             }
-            std::cout << std::endl;
-            std::cout << "\033[1C";
+        } else {
+            for (int j = 0; j < maxHelpStringLength; ++j) {
+                std::cout << " ";
+            }
         }
+        std::cout << std::endl;
+        std::cout << "\033[1C";
     }
 }
 
@@ -320,14 +367,6 @@ void Renderer_2d::drawSubConsole() {
     drawSeparator(inputLineStart + "\033[1B");
     showHelp();
 
-    std::cout << subConsoleStart << "S";
-    std::cout << subConsoleEnd << "S";
-    std::cout << mazeWindowStart << "M";
-    std::cout << mazeWindowEnd << "M";
-    std::cout << inputLineStart << "I";
-    std::cout << helpWindowFirstLine << "H";
-    std::cout << helpWindowLastLine << "H";
-
     clearInputLine();
 }
 
@@ -402,12 +441,18 @@ void Renderer_2d::renderLoop() {
             Render2dFlags::showHelpInstructions = false;
         }
 
-        if (Render2dFlags::redrawPlayer) {
+        if (Render2dFlags::drawMaze) {
             if (Render2dFlags::showAllMaze) {
                 drawAllMaze();
             } else {
                 drawMaze();
             }
+            clearInputLine();
+            Render2dFlags::drawMaze = false;
+        }
+
+        if (Render2dFlags::redrawPlayer) {
+            redrawPlayer();
             drawItemCounter();
             clearInputLine();
             Render2dFlags::redrawPlayer = false;

@@ -81,8 +81,8 @@ void Game::showHelp() {
 
 
 void Game::handleKey(const std::string& key) {
-    // make key uppercase
-    std::string keyUpper = key;
+    // make Key uppercase
+    std::string keyUpper(1, static_cast<char>(std::toupper(key[0])));
     if (keyUpper == Config::MOVE_FORWARD) {
         movePlayer(Direction::UP);
     } else if (keyUpper == Config::MOVE_BACKWARD) {

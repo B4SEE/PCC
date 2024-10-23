@@ -10,7 +10,7 @@
 #include <Config.h>
 #include <Render2dFlags.h>
 
-Renderer_2d::Renderer_2d() : running(false), consoleWidth(0), consoleHeight(0), subConsoleWidth(0), subConsoleHeight(0), maze(nullptr) {}
+Renderer_2d::Renderer_2d() : running(false), maze(nullptr) {}
 
 Renderer_2d::~Renderer_2d() {
     stop();
@@ -60,8 +60,19 @@ void switchThroughDisplayGrid(int num) {
     }
 }
 
+void drawEmptyMaze(int mazeWindowWidth, int mazeWindowHeight) {
+    for (int i = 0; i < mazeWindowHeight; ++i) {
+        for (int j = 0; j < mazeWindowWidth; ++j) {
+            std::cout << "#";
+        }
+        std::cout << std::endl;
+        std::cout << "\033[1C";
+    }
+}
+
 void Renderer_2d::drawMaze() {
     if (maze == nullptr) {
+        drawEmptyMaze(mazeWindowWidth, mazeWindowHeight);
         return;
     }
 
@@ -112,13 +123,7 @@ void Renderer_2d::printWinMessage() {
 void Renderer_2d::drawAllMaze() {
     std::cout << mazeWindowStart;
     if (maze == nullptr) {
-        for (int i = 0; i < mazeWindowHeight; ++i) {
-            for (int j = 0; j < mazeWindowWidth; ++j) {
-                std::cout << "#";
-            }
-            std::cout << std::endl;
-            std::cout << "\033[1C";
-        }
+        drawEmptyMaze(mazeWindowWidth, mazeWindowHeight);
         return;
     }
 
@@ -367,7 +372,11 @@ void Renderer_2d::drawSubConsole() {
     calculateSubConsole();
 
     drawBorders();
-    drawMaze();
+    if (Render2dFlags::showAllMaze) {
+        drawAllMaze();
+    } else {
+        drawMaze();
+    }
     drawItemCounter();
     drawSeparator(inputLineStart + "\033[1A");
     drawInputLine();
